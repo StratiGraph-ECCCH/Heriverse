@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<link rel="icon" href="appicon.png" sizes="512x512" type="image/png" />
+
+		<!-- Add iOS meta tags and icons -->
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="apple-mobile-web-app-title" content="Heriverse" />
+		<link rel="apple-touch-icon" href="appicon.png" />
+
+		<!-- PWA manifest -->
+		<link rel="manifest" href="../app.webmanifest" />
+
+		<meta name="title" content="Heriverse" />
+		<meta name="description" content="Extended Matrix Visual Inspector and Querier" />
+		<!-- Add meta theme-color -->
+		<meta name="theme-color" content="#FFFFFF" />
+
+		<title>Heriverse Login</title>
+
+		<!-- jQuery 1.8 or later, 33 KB -->
+		<link rel="stylesheet" href="https://unpkg.com/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+
+		<!-- CSS Script Import -->
+
+		<script src="https://kit.fontawesome.com/034017cde6.js" crossorigin="anonymous"></script>
+
+		<link rel="stylesheet" type="text/css" href="../res/style/scenes_page.css" />
+
+		<!-- Vendors -->
+		<script type="text/javascript" src="/vendors/vendors.min.js"></script>
+
+		<!-- JS Import -->
+		<script type="module" src="/src/ATON.js"></script>
+		<script type="module" src="Login.js"></script>
+		<script type="text/javascript" src="../vendors/xml2json.min.js"></script>
+		<script type="text/javascript" src="/dist/THREE.bundle.js"></script>
+		<script type="module" src="../config/Utils.js"></script>
+
+		<!-- jQuery 1.8 or later, 33 KB -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	</head>
+	<body style="min-height: 100vh; display: grid">
+		<script>
+			window.addEventListener("load", () => {
+				Login.init();
+			});
+		</script>
+	</body>
+</html>

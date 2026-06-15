@@ -1,0 +1,591 @@
+.emviqLabel {
+	border: 0px;
+	display: inline-block;
+
+	color: #fff;
+	text-shadow: 0 0 5px black;
+
+	text-align: right;
+	vertical-align: middle;
+	padding: 5px;
+	margin: 0px;
+
+	outline: none;
+}
+
+.emviqPeriod {
+	display: inline-block;
+	font-size: large;
+	color: #fff;
+	text-shadow: 0 0 15px black;
+	text-align: center;
+	vertical-align: middle;
+	margin-bottom: -5px;
+	pointer-events: none;
+}
+
+.emviqTimeline {
+	-webkit-overflow-scrolling: touch;
+}
+
+.emviqPeriodSelector {
+	color: #fff;
+	text-shadow: 0 0 10px black;
+
+	border-top: 0px solid white;
+	font-size: small;
+	font-weight: bold;
+	display: inline-block;
+	border-radius: 1px;
+	padding: 0.8em;
+	padding-left: 1.1em;
+	padding-right: 1.1em;
+	margin: 0px;
+	margin-right: 5px;
+	min-height: 20px;
+	line-height: 20px;
+	text-align: center;
+	vertical-align: middle;
+	background-color: rgba(0, 0, 0, 0.4);
+	backdrop-filter: blur(6px);
+	cursor: pointer;
+	text-decoration: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+
+	transition: all 0.1s ease-in-out;
+}
+
+.emviqPeriodSelected {
+	scale: 1.05;
+	color: #fcfcfc;
+	box-shadow: 0 0px 10px rgba(0, 0, 0, 0.7) !important;
+}
+
+.emviqPeriodSelector:first-child {
+	border-radius: 7px 0px 0px 7px;
+}
+.emviqPeriodSelector:last-child {
+	border-radius: 0px 7px 7px 0px;
+}
+
+.emviqPeriodSelector:hover {
+	transform: scale(1.1);
+}
+
+.emviqProxyHighlight {
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	padding: 5px;
+	height: 40px;
+}
+
+.emviqSearchBox {
+	pointer-events: all;
+	display: inline-block;
+	background-color: rgba(0, 0, 0, 0.2);
+	border-radius: 5px;
+	padding: 1px;
+}
+
+.emviqSG {
+	margin-top: 4px;
+	margin-right: 0px;
+	max-width: 400px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	background-color: #00000000;
+	padding: 10px;
+	border-radius: 20px;
+}
+
+.emviqSGEntry {
+	text-align: left;
+	margin-left: 20px;
+	margin-top: 5px;
+	margin-bottom: 5px;
+	margin-right: 0px;
+
+	border-radius: 5px;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+.emviqSNTitle {
+	background-color: rgba(0, 0, 0, 1);
+	border-radius: 5px;
+	padding: 2px;
+}
+
+.emviqSNTitle img {
+	width: 40px;
+	height: auto;
+
+	vertical-align: middle;
+	margin-right: 2px;
+}
+
+.emviqSGDocImg {
+	position: relative;
+
+	display: block !important;
+
+	width: 100%;
+	height: auto;
+
+	transform: scale(1);
+	transition: transform 0.5s;
+}
+
+input[type="range"]::-ms-thumb {
+	box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+	border: 1px solid #000000;
+	height: 40px;
+	width: 40px;
+	border-radius: 6px;
+	background: #ffffff;
+	cursor: pointer;
+	height: 10px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+	box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+	border: 1px solid #000000;
+	height: 40px;
+	width: 40px;
+	border-radius: 50%;
+	background: #ffffff;
+	cursor: pointer;
+	-webkit-appearance: none;
+	margin-top: -20px;
+}
+
+input[type="range"]::-moz-range-thumb {
+	box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+	border: 1px solid #000000;
+	height: 40px;
+	width: 40px;
+	border-radius: 6px;
+	background: #ffffff;
+	cursor: pointer;
+}
+
+table {
+	color: #fff;
+	margin: 20px;
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+}
+
+th {
+	padding: 10px;
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+tr {
+	padding: 10px;
+	background-color: rgba(0, 0, 0, 0.2);
+	cursor: pointer;
+}
+
+tr:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+.icon-button-mobile {
+	padding: 0px;
+	color: rgba(255, 255, 255, 0);
+	background-color: rgba(255, 255, 255, 0.274);
+	border: none;
+	margin-left: 0%;
+	right: 20px;
+	top: 0;
+	line-height: 1;
+
+	cursor: pointer;
+	font-size: 16px;
+
+	display: inline-block;
+	position: relative;
+}
+.mobile {
+	top: 0%;
+	z-index: 100;
+	width: fit-content;
+	right: 5px;
+	top: 20px;
+	right: 20px;
+	display: none;
+	flex-direction: column;
+	position: fixed;
+	cursor: pointer;
+}
+
+.content {
+	margin-left: 0;
+	padding: 20px;
+}
+
+.tatonToolbar-top-center {
+	z-index: 130;
+	float: left;
+	position: relative;
+
+	align-items: center;
+	white-space: nowrap;
+	overflow: visible;
+	justify-content: center;
+	margin: 0;
+	padding: 0px;
+	width: 50%;
+	text-align: center;
+	height: 90%;
+	top: 5%;
+}
+
+.scene-title {
+	margin: 0px;
+	height: 25%;
+	font-size: max(30px, min(4vh, 55px));
+}
+.icon-button {
+	padding: 0px 0px;
+	color: rgba(255, 255, 255, 0);
+	background-color: rgba(255, 255, 255, 0);
+	border: none;
+	border-radius: 5px;
+
+	font-size: 2.5em;
+	color: white;
+	position: relative;
+	width: 50%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	float: left;
+}
+.icon-button img {
+	height: 25%;
+	align-self: center;
+	cursor: pointer;
+}
+.icon-menu-mobile {
+	width: 10%;
+	float: left;
+	height: 100%;
+	display: none;
+}
+.icon-menu {
+	padding: 0px 0px;
+	color: rgba(255, 255, 255, 0);
+	background-color: rgba(255, 255, 255, 0);
+	border: none;
+	border-radius: 5px;
+
+	font-size: 16px;
+	position: relative;
+	width: 50%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	float: left;
+}
+.icon-menu img {
+	align-self: center;
+	height: 25%;
+	cursor: pointer;
+}
+
+.container {
+	display: grid;
+	place-items: center;
+}
+
+.pov-topbar-nav {
+	height: 50%;
+}
+.pov {
+	color: #fff;
+	text-shadow: 0 0 10px black;
+	display: inline-block;
+
+	border-top: 0px solid rgba(255, 255, 255, 0);
+
+	font-size: max(14px, min(2vh, 28px));
+	font-weight: bold;
+
+	border-radius: 1px;
+
+	padding: 0.8em;
+	padding-left: 1.1em;
+	padding-right: 1.1em;
+
+	margin: 0px;
+	margin-right: 0%;
+	min-height: 20px;
+	line-height: 20px;
+
+	text-align: center;
+	vertical-align: middle;
+
+	background-color: rgba(255, 255, 255, 0.274);
+}
+.icon-menu {
+	display: none;
+}
+
+.tatonToolbar {
+	z-index: 110;
+
+	position: fixed;
+	display: block;
+	align-items: center;
+	white-space: nowrap;
+	overflow: visible;
+	justify-content: center;
+	left: 0%;
+	margin: 0;
+	padding: 0px;
+	width: 100%;
+	height: 14%;
+	min-height: 115px;
+	max-height: 200px;
+	color: #fff;
+	text-align: center;
+
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	-o-user-select: none;
+	user-select: none;
+	background-color: #f4f4f425;
+}
+
+.tatonToolbar-top-right {
+	z-index: 130;
+	float: left;
+	position: relative;
+
+	align-items: center;
+	white-space: nowrap;
+	overflow: visible;
+	justify-content: center;
+	top: 0%;
+	right: 0%;
+	margin: 0;
+	padding: 0px;
+	width: 25%;
+	text-align: center;
+	height: 100%;
+}
+
+.tatonToolbar-top-left {
+	z-index: 130;
+	float: left;
+	position: relative;
+	top: 0%;
+	left: 0%;
+	line-height: 5em;
+	align-items: center;
+	width: 25%;
+	text-align: left;
+	font-size: large;
+	height: 100%;
+}
+
+.tatonToolbar-bottom {
+	bottom: -5%;
+	width: 100%;
+}
+
+.selector-epochs {
+	text-align-last: center;
+	background-color: rgba(255, 255, 255, 0.5);
+	border-radius: 12px;
+	min-width: 15%;
+	color: white;
+	font-weight: bold;
+	text-shadow: 0 0 10px black;
+}
+
+.tatonToolbar-bottom-left {
+	bottom: 0%;
+	left: 0px;
+	width: 100%;
+	text-align: left;
+}
+
+.menu {
+	width: 40%;
+	height: 100%;
+	top: 0px;
+	position: fixed;
+	left: -80%;
+	background: rgba(0, 0, 0, 0.8);
+}
+
+ul.breadcrumb {
+	padding: 10px 16px;
+	list-style: none;
+}
+
+ul.breadcrumb li {
+	display: inline;
+	font-size: 18px;
+}
+
+ul.breadcrumb li + li:before {
+	padding: 8px;
+	color: white;
+	content: "/\00a0";
+}
+
+ul.breadcrumb.active li {
+	color: white;
+	text-decoration: underline;
+}
+
+a.sideitem {
+	text-decoration: none;
+	color: white;
+}
+a.sideitem:hover {
+	text-decoration: underline;
+	color: white;
+}
+
+.year {
+	font-size: max(12px, min(2vh, 18px));
+	margin: 1vh;
+}
+
+.custom-btn .accordion-button:not(.collapsed)::after {
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+	transform: rotate(-180deg) !important;
+}
+
+.accordion-button::after {
+	background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e") !important;
+}
+
+.accordion-button:not(.collapsed) {
+	color: #ffffff !important;
+	background-color: #58595a !important;
+	box-shadow: inset 0 0px 0 rgba(0, 0, 0, 0) !important;
+}
+.accordion-button {
+	background-color: #58595a !important;
+}
+.accordion-collapse {
+	color: #ffffff !important;
+	background-color: #9e9e9e !important;
+	padding-left: 1em;
+	padding-bottom: 0.5em;
+}
+.accordion-item {
+	background-color: #ffffff00 !important;
+	border: 0px solid rgba(0, 0, 0, 0.125) !important;
+}
+.accordion-button:focus {
+	border-color: #000202 !important;
+	box-shadow: 0 0 0 0.25rem rgb(0 0 0 / 25%) !important;
+}
+
+.atonPopupLabel {
+	box-sizing: content-box !important;
+}
+.accordion-button {
+	color: white !important;
+}
+.box {
+	float: left;
+	height: 20px;
+	width: 20px;
+	margin-bottom: 15px;
+	border: 1px solid black;
+	clear: both;
+}
+
+p::before {
+	align-items: center;
+	background-color: var(--p-item-bg);
+	border-radius: 50%;
+	color: transparent;
+	content: ">";
+	display: inline-flex;
+	font-weight: bold;
+	width: 24px;
+	height: 24px;
+	justify-content: center;
+	margin-right: 10px;
+}
+
+#dropdownMenu2::before {
+	align-items: center;
+	background-color: var(--selected-bg);
+	border-radius: 50%;
+	color: transparent;
+	content: ">";
+	display: inline-flex;
+	font-weight: bold;
+	width: 24px;
+	height: 24px;
+	justify-content: center;
+	margin-right: 10px;
+	text-shadow: none;
+}
+
+.clicked-toolbar-btn {
+	color: #b96cac;
+	text-shadow: 0 0 10px white;
+}
+
+#popup {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.8);
+	justify-content: center;
+	align-items: center;
+}
+#popup img {
+	max-width: 90%;
+	max-height: 90%;
+}
+
+@media screen and (max-width: 992px) {
+	#close-button {
+		display: block;
+	}
+	.tatonToolbar-top-center {
+		width: 80%;
+		text-align: center;
+	}
+	.tatonToolbar-top-left {
+		display: none;
+		width: 50%;
+		text-align: center;
+	}
+	.tatonToolbar-top-rigth {
+		display: none;
+	}
+}
+
+.accordion-icon-type {
+	max-width: 50px;
+	max-height: 30px;
+	width: 100%;
+	height: auto;
+}

@@ -1,0 +1,60 @@
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  image: docker:24
+
+  services:
+    - name: docker:24-dind
+      alias: docker
+
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_DRIVER: overlay2
+
+  only:
+    - main
+
+  before_script:
+    -  echo "$CI_REGISTRY_TOKEN" | docker login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
+
+  script:
+    - docker build -t $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA .
+    - docker tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA $CI_REGISTRY_IMAGE:latest
+    - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+deploy:
+  stage: deploy
+  image: debian:13
+
+  tags:
+    - staging
+
+  only:
+    - main
+
+  before_script:
+    - apt update
+    - apt install openssh-server -y
+    - mkdir -p /root/.ssh
+    - chmod 700 /root/.ssh
+    - echo "$DEPLOY_STAGING_SSH_PRIVATE_KEY" | base64 -d > /root/.ssh/id_rsa
+    - chmod 600 /root/.ssh/id_rsa
+    - eval $(ssh-agent -s)
+    - ssh-add /root/.ssh/id_rsa
+    - ssh-keyscan $DEPLOY_STAGING_HOST >> /root/.ssh/known_hosts
+
+  script:
+    - |
+      ssh $DEPLOY_STAGING_USER@$DEPLOY_STAGING_HOST << EOF
+        cd $DEPLOY_STAGING_FOLDER
+
+        sudo docker pull $CI_REGISTRY_IMAGE:latest
+
+        sudo docker compose down
+        sudo docker compose up -d
+      EOF

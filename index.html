@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<link rel="icon" href="appicon.png" sizes="512x512" type="image/png" />
+
+		<!-- Add iOS meta tags and icons -->
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="apple-mobile-web-app-title" content="Heriverse" />
+		<link rel="apple-touch-icon" href="appicon.png" />
+
+		<!-- PWA manifest -->
+		<link rel="manifest" href="app.webmanifest" />
+
+		<meta name="title" content="Heriverse" />
+		<meta name="description" content="Extended Matrix Visual Inspector and Querier" />
+		<!-- Add meta theme-color -->
+		<meta name="theme-color" content="#FFFFFF" />
+
+		<title>Heriverse</title>
+
+		<!-- jQuery 1.8 or later, 33 KB -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+			crossorigin="anonymous" />
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+			crossorigin="anonymous"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/stats-js@1.0.1/build/stats.min.js"></script>
+
+		<!-- CSS Script Import -->
+		<link rel="stylesheet" type="text/css" href="/res/css/aton.css" />
+		<link rel="stylesheet" type="text/css" href="res/style/emviq.css" />
+		<link rel="stylesheet" type="text/css" href="res/style/custom_fotorama.css" />
+		<link rel="stylesheet" type="text/css" href="res/foto/fotorama.css" />
+		<link rel="stylesheet" type="text/css" href="res/style/sidebar.css" />
+		<link rel="stylesheet" type="text/css" href="res/style/collaborative.css" />
+		<link rel="stylesheet" type="text/css" href="res/style/ui.css" />
+		<link rel="stylesheet" type="text/css" href="editor/style.css" />
+		<script src="https://kit.fontawesome.com/034017cde6.js" crossorigin="anonymous"></script>
+
+		<!-- Vendors -->
+		<script type="text/javascript" src="/vendors/vendors.min.js"></script>
+		<script type="text/javascript" src="vendors/xml2json.min.js"></script>
+		<script type="text/javascript" src="/dist/THREE.bundle.js"></script>
+
+		<!-- JS Import -->
+		<script type="module" src="/src/ATON.js"></script>
+		<script type="module" src="config/Utils.js"></script>
+		<script type="module" src="src/Heriverse.js"></script>
+		<script type="module" src="src/collaborative/HeriverseCollaborative.js"></script>
+		<script type="module" src="src/collaborative/HeriverseCollaborativeUI.js"></script>
+		<script type="module" src="src/HeriverseGraphDrawer.js"></script>
+
+		<!-- jQuery 1.8 or later, 33 KB -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script type="text/javascript" src="res/foto/fotorama.js"></script>
+
+		<!-- Model Viewer -->
+		<script
+			type="module"
+			src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+		<!-- Translation -->
+		<script src="https://unpkg.com/i18next@21.6.14/dist/umd/i18next.min.js"></script>
+		<script src="./src/i18n/Translate.js" defer></script>
+		<!-- 
+    <script type="text/javascript" src="/dist/ATON.min.js"></script>
+    <script type="text/javascript" src="dist/EMviq.min.js"></script> 
+-->
+	</head>
+
+	<body id="body" oncontextmenu="return false;">
+		<!-- Top Toolbar -->
+		<script>
+			window.addEventListener("load", async () => {
+				await Heriverse.init("scene");
+				HeriverseGraphDrawer.init();
+				HeriverseCollaborative.init();
+				HeriverseCollaborativeUI.init();
+			});
+		</script>
+
+		<div id="Page">
+			<div id="container-bar" class="tatonToolbar d-flex h-auto">
+				<div id="icon-button-menu" class="icon-menu-mobile"></div>
+				<div
+					id="toolbar-left"
+					class="tatonToolbar-top-left d-none d-md-flex align-items-center"></div>
+				<div id="top-center" class="tatonToolbar-top-center">
+					<div id="title" class="d-none d-md-block" style="height: 50%"></div>
+					<div id="mobile-title" class="d-block d-md-none w-100 my-3"></div>
+					<div id="graphSelector" class="graphSelector" style="display: contents"></div>
+					<div
+						id="mobile-toolbar"
+						class="d-flex align-items-center justify-content-evenly d-md-none w-100 my-2"></div>
+				</div>
+				<div
+					id="toolbar-right"
+					class="tatonToolbar-top-right d-none d-md-flex align-items-center justify-content-end"></div>
+				<div id="periodSectionPanel" class="hidden">
+					<div
+						class="d-flex flex-column align-items-center p-4"
+						style="position: absolute; top: 50vw; background: #ffffffaa; border-radius: 15px"></div>
+				</div>
+				<div
+					id="scene-controls-panel"
+					class="accordion"
+					style="position: absolute; right: 0; top: 100%">
+					<div class="accordion-item">
+						<h2 class="accordion-header">
+							<button
+								class="accordion-button collapsed py-1"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#scene-controls"
+								aria-expanded="false"
+								aria-controls="scene-controls"
+								data-i18n="SCENE_CONTROLS_LABEL"></button>
+						</h2>
+						<div
+							id="scene-controls"
+							class="accordion-collapse collapse"
+							data-bs-parent="#scene-controls-panel">
+							<div
+								class="accordion-body d-flex flex-column"
+								style="overflow-y: auto; max-height: 70vh">
+								<div class="sceneSettingSection d-flex flex-column">
+									<label for="light_intensity" class="form-label">Intensità luce ambiente</label>
+									<input
+										type="range"
+										class="form-range"
+										min="0"
+										max="5"
+										step="0.5"
+										id="light_intensity"
+										name="light_intensity" />
+
+									<label for="allProxyVisible" class="form-label allProxyVisibleLabel"
+										><input
+											type="checkbox"
+											id="allProxyVisible"
+											class="allProxyVisible"
+											onchange="Heriverse.setProxiesAlwaysVisible(this.checked)"
+											checked />
+										Proxy sempre visibili</label
+									>
+									<label for="showAllProxy" class="form-label showAllProxyLabel"
+										><input
+											type="checkbox"
+											id="showAllProxy"
+											class="showAllProxy"
+											onchange="Heriverse.showAllProxies(this.checked)" />
+										Mostra tutti i proxy</label
+									>
+								</div>
+
+								<div
+									id="relationsCheckboxSection"
+									class="d-flex flex-column justify-content-center"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- <div id="icon-button-menu" class="icon-menu-mobile"></div>
+				<div id="toolbar-left" class="tatonToolbar-top-left"></div>
+				<div id="top-center" class="tatonToolbar-top-center">
+					<div id="title" style="height: 50%"></div>
+				</div>
+				<div id="toolbar-right" class="tatonToolbar-top-right"></div> -->
+		</div>
+
+		<div id="mobile-menu" class="tatonToolbar-top-left menu close">
+			<!-- Pulsante chiudi -->
+			<button
+				id="close-mobile-menu"
+				type="button"
+				style="
+					position: absolute;
+					top: 10px;
+					right: 12px;
+					background: none;
+					border: none;
+					font-size: 1.6rem;
+					color: #fff;
+					z-index: 10;
+				">
+				<svg width="26" height="26" viewBox="0 0 16 16" fill="currentColor">
+					<path
+						d="M2 2l12 12M14 2L2 14"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round" />
+				</svg>
+			</button>
+
+			<ul id="mobile-menu-list" class="nav flex-column"></ul>
+		</div>
+
+		<!--<button id="sidebarToggle">Apri Sidebar</button>  Aggiunto  un pulsante per aprire la barra laterale -->
+		<div id="right-sidebar" class="d-none">
+			<div class="h-100 d-flex flex-column align-content-center">
+				<button
+					class="btn"
+					data-bs-theme="dark"
+					id="close-button"
+					aria-label="Close"
+					onclick="
+						UI.closeSidebar();
+						HeriverseGraphDrawer.clearAll();
+					">
+					<i class="fa-solid fa-x"></i>
+				</button>
+				<button
+					class="btn"
+					data-bs-theme="dark"
+					id="toggle-button"
+					aria-label="Hide/Show"
+					onclick="
+						$('.right-sidebar-class').toggleClass('d-none d-block');
+						$('#right-sidebar vr').toggleClass('d-none d-block');
+					">
+					<i class="fa-solid fa-circle-info"></i>
+				</button>
+			</div>
+			<vr></vr>
+			<div class="right-sidebar-class">
+				<div class="sidebar" id="sidebar"></div>
+				<div class="sidebar-bottom" id="sidebar-bottom"></div>
+			</div>
+		</div>
+		<!--
+      <div class="content" id="content">
+         Il contenuto principale qui 
+      </div>
+      -->
+
+		<!-- Proxy highlighted -->
+		<div class="emviqProxyHighlight">
+			<div id="idProxyID" class="emviqLabel"></div>
+		</div>
+
+		<!-- Bottom Toolbar -->
+		<div
+			id="idBottomToolbar"
+			class="tatonToolbar tatonToolbar-bottom d-none d-md-block"
+			style="background-color: rgba(0, 0, 0, 0); padding: 1px; padding-bottom: 10px">
+			<section class="d-none d-md-flex hidden">
+				<div
+					id="noModelsInScene"
+					class="w-100 fs-5 banner"
+					style="
+						position: absolute;
+						bottom: 100%;
+						background: linear-gradient(
+							268deg,
+							rgba(51, 56, 66, 0) 20%,
+							rgba(51, 56, 66, 0.6) 25%,
+							rgba(51, 56, 66, 1) 35%,
+							rgba(67, 73, 82, 1) 65%,
+							rgba(67, 73, 82, 0.6) 75%,
+							rgba(67, 73, 82, 0) 80%
+						);
+					">
+					Nessun elemento appartenente a questa epoca o filtro temporale
+				</div>
+			</section>
+			<div class="emviqTimeline" id="idTL"></div>
+
+			<div id="idBottomIcons" style="display: block"></div>
+
+			<!--
+        <div class="emviqSearchBox">
+            <button type="button" class="atonBTN atonBTN-red" onclick="EMVIQ.searchClear()"><img src="/res/icons/search-clear.png"></button>
+             <input id="idSearch" type="text" size="20" placeholder="Search...">
+            <button id="idSearchMatches" type="button" class="atonBTN" style="background-color: rgba(0,0,0, 0.5);" onclick="EMVIQ.popupMatches()"></button>
+        </div>
+         -->
+		</div>
+
+		<!--Users collaborative panel-->
+		<div id="users-panel">
+			<div id="users-panel-header">
+				<div class="users-panel-header-left">
+					<i class="fas fa-users"></i>
+					<span>Utenti</span>
+					<span id="users-panel-count" class="users-panel-count">0</span>
+				</div>
+				<i class="fas fa-chevron-up users-panel-toggle-icon"></i>
+			</div>
+			<ul id="users-panel-list"></ul>
+		</div>
+
+		<!-- Main Popup -->
+		<div id="idPopup" class="atonPopupContainer" style="display: none"></div>
+
+		<!-- Loader -->
+		<div id="idLoader" class="atonCenterLoader" style="display: none"></div>
+
+		<!-- Powered by -->
+		<div id="idPoweredBy" class="poweredBy">
+			Powered by
+			<a href="http://osiris.itabc.cnr.it/aton/" target="_blank">ATON</a>
+		</div>
+		<div id="collaborativeSection"></div>
+		<section class="d-flex d-md-none hidden">
+			<div
+				id="noModelsInScene-mobile"
+				class="w-100 banner"
+				style="
+					position: absolute;
+					bottom: 1.5rem;
+					background: linear-gradient(268deg, rgb(51, 56, 66) 0%, rgb(67, 73, 82) 100%);
+					font-size: 1rem;
+					text-align: center;
+					padding: 0.3rem 1.5rem;
+				">
+				Nessun elemento appartenente a questa epoca o filtro temporale
+			</div>
+		</section>
+	</body>
+</html>

@@ -1,0 +1,12 @@
+node_modules
+sessions
+npm-debug.log
+certs
+uploads
+.git
+.env
+.gitignore
+
+dist
+build
+coverage

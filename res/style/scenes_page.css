@@ -1,0 +1,373 @@
+body {
+	touch-action: auto !important;
+}
+
+.color-black {
+	color: black;
+}
+
+.scene-box {
+	border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	border: 10px solid #c4c4c4;
+	background-color: #c4c4c4;
+}
+
+.scene-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	word-wrap: break-word;
+}
+
+.input-search {
+	border-bottom: 1px solid;
+}
+
+.input-search input {
+	border: none !important;
+}
+
+.input-search .input-group-text {
+	background: none !important;
+	border: none !important;
+}
+
+.button-primary {
+	background-color: #434343;
+	color: #f4f4f4;
+	text-transform: capitalize;
+	text-align: center;
+	padding: 15px;
+	border-radius: 10px;
+}
+.input-row {
+	margin: 10px !important;
+}
+
+.input-card {
+	background-color: #ededed !important;
+	border-radius: 10px;
+	box-shadow: 1px 1px 10px;
+	padding: 10px;
+	padding-left: 30px;
+	padding-right: 30px;
+	margin: 10px !important;
+}
+.input-card .input-group-text {
+	background: none !important;
+	border: none !important;
+}
+
+.input-card input {
+	background: none;
+	border: none;
+	border-radius: 0px;
+	margin: 10px;
+}
+
+.input-group {
+	border-bottom: 1px solid;
+}
+
+.login-btn {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.form-check-input:checked {
+	background-color: #731d65;
+	border: #731d65;
+}
+
+.form-check-input:focus {
+	box-shadow: 0 0 1px 2px #b82fa1;
+	border-color: #b82fa1;
+}
+
+.card-img-top {
+	max-height: 20vh;
+}
+
+.tagSecButton,
+.categSecButton {
+	background-color: transparent;
+	border: 0;
+	font-family: sofia-pro, sans-serif;
+	font-size: 2.5ch;
+	font-style: normal;
+	text-decoration: underline;
+}
+
+.tagSecButton.active,
+.categSecButton.active,
+.tagButton.active,
+.catButton.active {
+	background-color: #b96cac;
+	border-radius: 8px;
+	color: white;
+	text-decoration: none;
+}
+
+.tagSection,
+.categSection {
+	display: flex;
+	flex-wrap: wrap;
+	padding: 10px 5px;
+}
+
+.tagSection.hidden,
+.categSection.hidden {
+	display: none;
+}
+
+.tagButton,
+.catButton {
+	background-color: #a4a4a4;
+	border: none;
+	border-radius: 8px;
+	color: white;
+	font-size: 2.3ch;
+	margin: 5px;
+	padding: 5px 8px;
+}
+
+#switch-toolbar {
+	display: flex;
+	flex-direction: row;
+	justify-content: end;
+}
+
+.button-bord {
+	display: flex;
+	aspect-ratio: 1;
+	align-content: center;
+	background-color: #c4c4c4;
+	margin: 0 5px;
+	padding: 10px;
+	width: 3%;
+	cursor: pointer;
+	border-radius: 8px;
+	border-color: #c4c4c4;
+}
+
+.view-icon img {
+	display: flex;
+	aspect-ratio: 1;
+	background-color: #c4c4c4;
+	width: 100%;
+	cursor: pointer;
+}
+
+.data-create {
+	padding-top: 30px;
+}
+
+.tag-m {
+	border: none;
+	background-color: #c4c4c4;
+	border-radius: 5px;
+	padding: 6px 9px;
+
+	font-family: sofia-pro, sans-serif;
+	font-style: normal;
+	font-weight: 100;
+	font-size: 1.6ch;
+
+	margin: 0px 3px;
+}
+
+#pagingDiv {
+	display: flex;
+	padding-top: 70px;
+	padding-bottom: 15px;
+	color: black;
+	font-size: 19px;
+	justify-self: center;
+	flex-direction: row;
+
+	font-family: sofia-pro, sans-serif;
+	font-style: normal;
+	font-weight: 100;
+}
+
+#pagingDiv .myDisableClass {
+	background-color: #c4c4c4;
+	color: white;
+}
+
+#pagingDiv .myClass {
+	background-color: #c4c4c4;
+	cursor: pointer;
+}
+
+#pagingDiv a,
+#pagingDiv button,
+#pagingDiv span {
+	display: inline-block;
+	padding: 3px 9px;
+	margin-right: 4px;
+	border-radius: 8px;
+	border: solid 1px #c4c4c4;
+	background: #c4c4c4;
+	font-size: 0.875em;
+	font-weight: bold;
+	text-decoration: none;
+	color: #717171;
+	text-shadow: 0px 1px 0px rgba(255, 255, 255, 1);
+}
+
+#pagingDiv a:hover,
+#pagingDiv button:hover {
+	background: #fefefe;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#fefefe), to(#f0f0f0));
+	background: -moz-linear-gradient(0% 0% 270deg, #fefefe, #f0f0f0);
+}
+
+#pagingDiv a.active,
+#pagingDiv button.active {
+	border: none;
+	background: #616161;
+	color: #f0f0f0;
+	text-shadow: 0px 0px 3px rgba(0, 0, 0, 0.5);
+}
+
+#pagingDiv span[data-page] {
+	color: #f4f4f4;
+	background: rgba(65, 139, 112, 1);
+}
+
+.link-container {
+	display: flex;
+	flex-direction: row;
+}
+
+.numElemSelector {
+	border-radius: 8px;
+	margin-right: 20px;
+	background-color: #c4c4c4;
+	color: #717171;
+	border-color: #c4c4c4;
+	padding: 2px 10px;
+	text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+	.button-bord {
+		width: 12%;
+	}
+
+	.numElemSelector {
+		margin-bottom: 20px;
+		margin-right: 0;
+		align-self: center;
+		text-align: center;
+		padding: 4px;
+		font-size: 2ch;
+	}
+
+	#pagingDiv {
+		font-size: 4.4vw;
+		display: flex;
+		flex-direction: column;
+	}
+
+	#pagingDiv a,
+	#pagingDiv span {
+		margin-right: 0px;
+	}
+}
+
+@media screen and (min-width: 600px) {
+	.button-bord {
+		width: 8%;
+	}
+}
+
+@media screen and (min-width: 768px) {
+	.button-bord {
+		width: 5%;
+	}
+
+	#page-numbers {
+		margin: 11px;
+		font-size: 15px;
+	}
+}
+
+@media screen and (min-width: 992px) {
+}
+
+@media screen and (min-width: 1200px) {
+}
+
+@media screen and (min-width: 1400px) {
+	.button-bord {
+		width: 4%;
+	}
+}
+
+.create-scene-grid {
+	background-color: #c4c4c4;
+	border: 10px solid #c4c4c4;
+	aspect-ratio: 1;
+	border-radius: 10px;
+	width: 100%;
+	height: 300px;
+
+	margin: 0;
+
+	color: white;
+	text-align: center;
+	word-wrap: break-word;
+	font-size: 1rem;
+
+	z-index: 20;
+	position: relative;
+
+	transform: translateY(20px);
+}
+
+.list-element-create-scene {
+	display: flex;
+	flex-direction: row;
+	margin: 15px 0;
+	background-color: #c4c4c4;
+	width: 50%;
+	justify-self: center;
+}
+
+.panel-create-scene {
+	display: flex;
+	width: 100%;
+	justify-content: center;
+	padding-top: 4%;
+}
+
+.create-scene-grid {
+	height: 200px;
+	transform: translateY(25px);
+}
+@media screen and (min-width: 1200px) {
+	.create-scene-grid {
+		height: 250px;
+		transform: translateY(20px);
+	}
+}
+
+@media screen and (min-width: 992px) {
+	.create-scene-grid {
+		height: 200px;
+		transform: translateY(25px);
+	}
+}
+
+@media screen and (min-width: 1400px) {
+	.create-scene-grid {
+		height: 290px;
+		transform: translateY(25px);
+	}
+}

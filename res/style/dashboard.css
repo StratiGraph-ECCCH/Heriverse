@@ -1,0 +1,75 @@
+.icon-button {
+	color: black;
+}
+
+.scene-title {
+	color: black;
+}
+
+.tatonToolbar-top-right {
+	right: -10%;
+}
+
+.tatonToolbar-top-center {
+	align-content: center;
+}
+
+.mycontainer {
+	margin-top: 10%;
+}
+
+.scene-box {
+	border-radius: 10px 10px 10px 10px;
+	-webkit-border-radius: 10px 10px 10px 10px;
+	-moz-border-radius: 10px 10px 10px 10px;
+	border: 10px solid #c4c4c4;
+	background-color: #c4c4c4;
+}
+
+.scene-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	word-wrap: break-word;
+
+	width: 250px;
+	height: 250px;
+	border-width: 2px;
+	border-color: black;
+}
+
+.btn-square-md {
+	width: 70px !important;
+	max-width: 100% !important;
+	max-height: 100% !important;
+	height: 60px !important;
+	text-align: center;
+	padding: 0px;
+	font-size: 12px;
+}
+
+.dash-btn {
+	font-size: 1.5em;
+}
+
+.tag-btn {
+	margin: 0 5px 0 5px;
+	background-color: #c4c4c4;
+	border-color: black;
+	color: black;
+}
+
+.form-control {
+	border-width: 0 0 2px !important;
+	border-bottom-color: black !important;
+	border-radius: 0 !important;
+}
+
+.edit-scene-btn {
+	right: 0;
+	color: black;
+	font-size: 1.5em;
+	background-color: transparent;
+	border: 0;
+}

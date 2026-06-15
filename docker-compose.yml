@@ -1,0 +1,9 @@
+services:
+  heriverse-server:
+    build: .
+    container_name: heriverse-server
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./uploads:/app/uploads
+      - ./config:/app/conf

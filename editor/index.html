@@ -1,0 +1,1551 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<link rel="icon" href="appicon.png" sizes="512x512" type="image/png" />
+
+		<!-- Add iOS meta tags and icons -->
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+		<meta name="apple-mobile-web-app-title" content="Heriverse" />
+		<link rel="apple-touch-icon" href="appicon.png" />
+
+		<!-- PWA manifest -->
+		<link rel="manifest" href="app.webmanifest" />
+
+		<meta name="title" content="Heriverse" />
+		<meta name="description" content="Extended Matrix Visual Inspector and Querier" />
+		<!-- Add meta theme-color -->
+		<meta name="theme-color" content="#FFFFFF" />
+
+		<title>Heriverse</title>
+
+		<!-- jQuery 1.8 or later, 33 KB -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+			crossorigin="anonymous" />
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+			crossorigin="anonymous"></script>
+
+		<!-- CSS Script Import -->
+		<link rel="stylesheet" type="text/css" href="/res/css/aton.css" />
+		<link rel="stylesheet" type="text/css" href="../res/style/emviq.css" />
+		<link rel="stylesheet" type="text/css" href="../res/style/custom_fotorama.css" />
+		<link rel="stylesheet" type="text/css" href="../res/foto/fotorama.css" />
+		<link rel="stylesheet" type="text/css" href="../res/style/collaborative.css" />
+		<link rel="stylesheet" type="text/css" href="../res/style/sidebar.css" />
+		<link rel="stylesheet" type="text/css" href="../res/style/chat.css" />
+		<link rel="stylesheet" type="text/css" href="../res/style/ui.css" />
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<script src="https://kit.fontawesome.com/034017cde6.js" crossorigin="anonymous"></script>
+
+		<!-- Vendors -->
+		<script type="text/javascript" src="/vendors/vendors.min.js"></script>
+		<script type="text/javascript" src="../vendors/xml2json.min.js"></script>
+		<script type="text/javascript" src="/dist/THREE.bundle.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/stats-js@1.0.1/build/stats.min.js"></script>
+
+		<!-- JS Import -->
+		<script type="module" src="/src/ATON.js"></script>
+		<script type="module" src="../src/Heriverse.js"></script>
+		<script type="module" src="../src/HeriverseGraphDrawer.js"></script>
+		<script type="module" src="../src/collaborative/HeriverseCollaborative.js"></script>
+		<script type="module" src="../src/collaborative/HeriverseCollaborativeUI.js"></script>
+		<script type="module" src="../config/Utils.js"></script>
+		<script type="module" src="Editor.js"></script>
+
+		<script type="text/javascript" src="drag2move.js"></script>
+
+		<!-- jQuery 1.8 or later, 33 KB -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script type="text/javascript" src="../res/foto/fotorama.js"></script>
+
+		<!-- SELECT2 -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css"
+			rel="stylesheet" />
+		<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+		<!-- Model Viewer -->
+		<script
+			type="module"
+			src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+
+		<!-- Translation -->
+		<script src="https://unpkg.com/i18next@21.6.14/dist/umd/i18next.min.js"></script>
+		<script src="../src/i18n/Translate.js" defer></script>
+		<!-- 
+    <script type="text/javascript" src="/dist/ATON.min.js"></script>
+    <script type="text/javascript" src="dist/EMviq.min.js"></script> 
+-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+		<script type="module" src="../src/HeriverseImportExport.js"></script>
+	</head>
+
+	<body id="body" oncontextmenu="return false;">
+		<!-- Top Toolbar -->
+		<script>
+			window.addEventListener("load", async () => {
+				await Heriverse.init("editor");
+				HeriverseGraphDrawer.init();
+				HeriverseCollaborative.init();
+				HeriverseCollaborativeUI.init();
+			});
+		</script>
+		<div id="Page">
+			<div
+				id="container-bar"
+				class="tatonToolbar d-flex h-auto"
+				style="background-color: #7e670382">
+				<div id="selectedNodeInfoSection" class="d-none">
+					<span id="selectedNodeName">Nome fittizio</span>
+				</div>
+				<div id="icon-button-menu" class="icon-menu-mobile"></div>
+				<div
+					id="toolbar-left"
+					class="tatonToolbar-top-left d-none d-md-flex align-items-center"></div>
+				<div id="top-center" class="tatonToolbar-top-center">
+					<div id="title" class="d-none d-md-block my-3" style="height: 50%"></div>
+					<div id="mobile-title" class="d-block d-md-none w-100 my-3"></div>
+					<div id="graphSelector" class="graphSelector" style="display: contents"></div>
+					<div
+						id="mobile-toolbar"
+						class="d-flex align-items-center justify-content-evenly d-md-none w-100 my-2"></div>
+				</div>
+				<div
+					id="toolbar-right"
+					class="tatonToolbar-top-right d-none d-md-flex align-items-center justify-content-end"></div>
+				<div id="periodSectionPanel" class="hidden">
+					<div
+						class="d-flex flex-column align-items-center p-4"
+						style="
+							position: absolute;
+							top: 30vh;
+							left: 2vw;
+							background: #ffffffaa;
+							border-radius: 15px;
+						"></div>
+				</div>
+			</div>
+			<div id="mobile-menu" class="tatonToolbar-top-left menu close">
+				<!-- Pulsante chiudi -->
+				<button
+					id="close-mobile-menu"
+					type="button"
+					style="
+						position: absolute;
+						top: 10px;
+						right: 12px;
+						background: none;
+						border: none;
+						font-size: 1.6rem;
+						color: #fff;
+						z-index: 10;
+					">
+					<svg width="26" height="26" viewBox="0 0 16 16" fill="currentColor">
+						<path
+							d="M2 2l12 12M14 2L2 14"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round" />
+					</svg>
+				</button>
+
+				<ul id="mobile-menu-list" class="nav flex-column"></ul>
+			</div>
+			<!-- <div id="menuButton"><a class="icon-menu tatonToolbar-top-left"></a></div> -->
+
+			<!--<button id="sidebarToggle">Apri Sidebar</button>  Aggiunto  un pulsante per aprire la barra laterale -->
+			<div id="right-sidebar" class="d-none">
+				<div class="h-100 d-flex flex-column align-content-center">
+					<button
+						class="btn"
+						data-bs-theme="dark"
+						id="close-button"
+						aria-label="Close"
+						onclick="
+							UI.closeSidebar();
+							HeriverseGraphDrawer.clearAll();
+						">
+						<i class="fa-solid fa-x"></i>
+					</button>
+					<button
+						class="btn"
+						data-bs-theme="dark"
+						id="toggle-button"
+						aria-label="Hide/Show"
+						onclick="
+							$('.right-sidebar-class').toggleClass('d-none d-block');
+							$('#right-sidebar vr').toggleClass('d-none d-block');
+						">
+						<i class="fa-solid fa-circle-info"></i>
+					</button>
+				</div>
+				<vr></vr>
+				<div class="right-sidebar-class">
+					<div class="sidebar" id="sidebar"></div>
+					<div class="sidebar-bottom" id="sidebar-bottom"></div>
+				</div>
+			</div>
+			<!--
+      <div class="content" id="content">
+         Il contenuto principale qui 
+      </div>
+      -->
+
+			<!-- Proxy highlighted -->
+			<div class="emviqProxyHighlight"><div id="idProxyID" class="emviqLabel"></div></div>
+
+			<!-- Bottom Toolbar -->
+			<div
+				id="idBottomToolbar"
+				class="tatonToolbar tatonToolbar-bottom d-none d-md-block"
+				style="background-color: rgba(0, 0, 0, 0); padding: 1px; padding-bottom: 10px">
+				<section class="d-none d-md-flex hidden">
+					<div
+						id="noModelsInScene"
+						class="w-100 fs-5 banner"
+						style="
+							position: absolute;
+							bottom: 100%;
+							background: linear-gradient(
+								268deg,
+								rgba(51, 56, 66, 0) 20%,
+								rgba(51, 56, 66, 0.6) 25%,
+								rgba(51, 56, 66, 1) 35%,
+								rgba(67, 73, 82, 1) 65%,
+								rgba(67, 73, 82, 0.6) 75%,
+								rgba(67, 73, 82, 0) 80%
+							);
+						">
+						Nessun elemento appartenente a questa epoca o filtro temporale
+					</div>
+				</section>
+				<div class="emviqTimeline" id="idTL"></div>
+				<!--
+        <div id="idTimelineContainer" style="display:inline-block; width:90%"></div><br>
+-->
+				<div id="idBottomIcons" style="display: block"></div>
+
+				<!--
+        <div class="emviqSearchBox">
+            <button type="button" class="atonBTN atonBTN-red" onclick="EMVIQ.searchClear()"><img src="/res/icons/search-clear.png"></button>
+             <input id="idSearch" type="text" size="20" placeholder="Search...">
+            <button id="idSearchMatches" type="button" class="atonBTN" style="background-color: rgba(0,0,0, 0.5);" onclick="EMVIQ.popupMatches()"></button>
+        </div>
+         -->
+			</div>
+
+			<!-- Main Popup -->
+			<div id="idPopup" class="atonPopupContainer" style="display: none"></div>
+
+			<!-- Loader -->
+			<div id="idLoader" class="atonCenterLoader" style="display: none"></div>
+
+			<!-- Powered by -->
+			<div id="idPoweredBy" class="poweredBy">
+				Powered by <a href="http://osiris.itabc.cnr.it/aton/" target="_blank">ATON</a>
+			</div>
+			<div id="collaborativeSection"></div>
+			<section class="d-flex d-md-none hidden">
+				<div
+					id="noModelsInScene-mobile"
+					class="w-100 banner"
+					style="
+						position: absolute;
+						bottom: 1.5rem;
+						background: linear-gradient(268deg, rgb(51, 56, 66) 0%, rgb(67, 73, 82) 100%);
+						font-size: 1rem;
+						text-align: center;
+						padding: 0.3rem 1.5rem;
+					">
+					Nessun elemento appartenente a questa epoca o filtro temporale
+				</div>
+			</section>
+
+			<div id="tranPan-panel" class="d-none flex-column">
+				<div id="tranPan-panel-header" data-i18n="TRANSFORM_PANEL_TITLE"></div>
+				<div id="tranPan-panel-body" class="d-flex flex-column">
+					<span id="tranPanPosLabel" data-i18n="TRANPAN_POSITION_LABEL"></span>
+					<div id="tranPanPosSection" class="d-flex">
+						<input type="number" step="0.05" id="tranPanPosX" /><input
+							type="number"
+							step="0.05"
+							id="tranPanPosY" /><input type="number" step="0.05" id="tranPanPosZ" />
+					</div>
+					<span id="tranPanRotLabel" data-i18n="TRANPAN_ROTATION_LABEL"></span>
+					<div id="tranPanRotSection" class="d-flex">
+						<input type="number" step="0.0175" id="tranPanRotX" /><input
+							type="number"
+							step="0.0175"
+							id="tranPanRotY" /><input type="number" step="0.0175" id="tranPanRotZ" />
+					</div>
+					<span id="tranPanScaleLabel" data-i18n="TRANPAN_SCALE_LABEL"></span>
+					<div id="tranPanScaleSection" class="d-flex">
+						<input type="number" step="0.05" id="tranPanScaleX" /><input
+							type="number"
+							step="0.05"
+							id="tranPanScaleY" /><input type="number" step="0.05" id="tranPanScaleZ" />
+					</div>
+				</div>
+			</div>
+
+			<div id="shelf-panel" class="d-none">
+				<div id="shelf-panel-header" class="py-1 px-2">Resource Shelf</div>
+				<div id="shelf-panel-searchbar" class="d-flex">
+					<input
+						type="text"
+						id="shelf-panel-searchbar-text"
+						aria-labelledby="shelf-panel-searchbar-label"
+						class="flex-grow-1" />
+					<label
+						id="shelf-panel-searchbar-label"
+						for="shelf-panel-searchbar-text"
+						class="fs-6 p-2 px-3 text-center">
+						<i class="fa-solid fa-magnifying-glass" style="color: #d4d4d4"></i>
+					</label>
+				</div>
+				<div id="shelf-panel-tabbar">
+					<ul class="nav nav-pills nav-fill text-light">
+						<!-- Voce ALL (attiva) -->
+						<li id="shelf-panel-all-links-button" class="nav-item">
+							<button
+								class="nav-link text-light active d-flex flex-column align-items-center justify-content-center"
+								data-bs-toggle="tab"
+								data-bs-target="#shelf-panel-all-links-list"
+								type="button"
+								role="tab"
+								aria-controls="shelf-panel-all-links-list"
+								aria-selected="true">
+								<i class="fas fa-bars"></i>
+								All
+							</button>
+						</li>
+						<!-- Voce 3D -->
+						<li id="shelf-panel-3D-links-button" class="nav-item">
+							<button
+								class="nav-link text-light d-flex flex-column align-items-center justify-content-center"
+								data-bs-toggle="tab"
+								data-bs-target="#shelf-panel-3D-links-list"
+								type="button"
+								role="tab"
+								aria-controls="shelf-panel-3D-links-list"
+								aria-selected="true">
+								<i class="fa-solid fa-cube"></i>
+								3D
+							</button>
+						</li>
+						<!-- Voce IMG -->
+						<li id="shelf-panel-img-links-button" class="nav-item">
+							<button
+								class="nav-link text-light d-flex flex-column align-items-center justify-content-center"
+								data-bs-toggle="tab"
+								data-bs-target="#shelf-panel-img-links-list"
+								type="button"
+								role="tab"
+								aria-controls="shelf-panel-img-links-list"
+								aria-selected="true">
+								<i class="fa-solid fa-image"></i>
+								IMG
+							</button>
+						</li>
+						<!-- Voce DOC -->
+						<li id="shelf-panel-doc-links-button" class="nav-item">
+							<button
+								class="nav-link text-light d-flex flex-column align-items-center justify-content-center"
+								data-bs-toggle="tab"
+								data-bs-target="#shelf-panel-doc-links-list"
+								type="button"
+								role="tab"
+								aria-controls="shelf-panel-doc-links-list"
+								aria-selected="true">
+								<i class="fa-solid fa-file"></i>
+								DOC
+							</button>
+						</li>
+						<li id="shelf-panel-in-scene" class="nav-item">
+							<button
+								class="nav-link text-light d-flex flex-column align-items-center justify-content-center"
+								data-bs-toggle="tab"
+								data-bs-target="#shelf-panel-in-scene-list"
+								type="button"
+								role="tab"
+								aria-controls="shelf-panel-in-scene-list"
+								aria-selected="true">
+								<i class="fa-solid fa-globe"></i>
+								SCENE
+							</button>
+						</li>
+					</ul>
+				</div>
+				<div id="shelf-panel-body">
+					<div
+						id="shelf-panel-all-links-list"
+						class="d-block"
+						role="tabpanel"
+						aria-labelledby="shelf-panel-all-links-button">
+						<ul class="list-group"></ul>
+					</div>
+					<div
+						id="shelf-panel-3D-links-list"
+						class="d-none"
+						role="tabpanel"
+						aria-labelledby="shelf-panel-3D-links-button">
+						<button
+							class="w-100 text-uppercase p-2 lexend"
+							style="background-color: #262d3b; color: white"
+							onclick="Editor.EditorUI.showRepresentationModelModal(true)">
+							aggiungi representation model
+						</button>
+						<ul class="list-group"></ul>
+					</div>
+					<div
+						id="shelf-panel-img-links-list"
+						class="d-none"
+						role="tabpanel"
+						aria-labelledby="shelf-panel-img-links-button">
+						<button
+							class="w-100 text-uppercase p-2 lexend"
+							style="background-color: #262d3b; color: white"
+							onclick="Editor.EditorUI.showImageModal()">
+							aggiungi immagine
+						</button>
+						<ul class="list-group"></ul>
+					</div>
+					<div
+						id="shelf-panel-doc-links-list"
+						class="d-none"
+						role="tabpanel"
+						aria-labelledby="shelf-panel-doc-links-button">
+						<button
+							class="w-100 text-uppercase p-2 lexend"
+							style="background-color: #262d3b; color: white"
+							onclick="Editor.EditorUI.showDocumentModal()">
+							aggiungi documento
+						</button>
+						<ul class="list-group"></ul>
+					</div>
+					<div
+						id="shelf-panel-in-scene-list"
+						class="d-none"
+						role="tabpanel"
+						aria-labelledby="shelf-panel-in-scene-button">
+						<ul class="list-group"></ul>
+					</div>
+				</div>
+			</div>
+			<script>
+				var tabButtons = document.querySelectorAll('#shelf-panel-tabbar [data-bs-toggle="tab"]');
+				tabButtons.forEach(function (button) {
+					button.addEventListener("shown.bs.tab", function (event) {
+						var newPanelSelector = event.target.getAttribute("data-bs-target");
+						var newPanel = document.querySelector(newPanelSelector);
+						newPanel.classList.remove("d-none");
+						newPanel.classList.add("d-block");
+
+						var oldPanelSelector = event.relatedTarget.getAttribute("data-bs-target");
+						var oldPanel = document.querySelector(oldPanelSelector);
+						oldPanel.classList.remove("d-block");
+						oldPanel.classList.add("d-none");
+						oldPanel
+							.querySelectorAll(".shelf-panel-element")
+							.forEach((elem) => elem.classList.toggle("d-none", false));
+
+						document.querySelector("#shelf-panel-searchbar-text").value = "";
+					});
+				});
+			</script>
+
+			<div id="workspace-panel" class="d-none">
+				<div id="workspace-panel-header" class="py-1 px-2">Workspace</div>
+				<div id="workspace-panel-searchbar" class="d-flex">
+					<input
+						type="text"
+						id="workspace-panel-searchbar-text"
+						aria-labelledby="workspace-panel-searchbar-label"
+						class="flex-grow-1" />
+					<label
+						id="workspace-panel-searchbar-label"
+						for="workspace-panel-searchbar-text"
+						class="fs-6 p-2 px-3 text-center">
+						<i class="fa-solid fa-magnifying-glass" style="color: #d4d4d4"></i>
+					</label>
+				</div>
+				<div id="workspace-panel-type-selector">
+					<select
+						id="workspace-panel-selector"
+						class="form-select"
+						aria-label="Tipo di nodo"></select>
+				</div>
+				<div id="workspace-panel-body">Nodi</div>
+			</div>
+
+			<!-- <div id="left-panel">
+				<div id="left-panel-header" class="py-1 px-2">Struttura</div>
+				<div id="left-panel-body">Livelli</div>
+			</div> -->
+			<div id="right-panel" class="d-none">
+				<div id="right-panel-header">TOOLS</div>
+				<div id="right-panel-body" style="overflow-y: scroll; max-height: 300px">
+					<!-- <button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="Editor.EditorUI.showEpochModal()"
+						data-i18n="NEW_EPOCH_LABEL"></button> -->
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="Editor.EditorUI.showRepresentationModelModal()"
+						data-i18n="NEW_MODEL_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="
+							Editor.setupEditCreateModal(Heriverse.CONNECTION_RULES_NODETYPES.STRATIGRAPHIC);
+							bootstrap.Modal.getOrCreateInstance(document.getElementById('createEditNode')).show();
+						"
+						data-i18n="NEW_STRAT_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="Editor.EditorUI.showLinkModal()"
+						data-i18n="NEW_LINK_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="Editor.EditorUI.showAuthorModal()"
+						data-i18n="NEW_AUTHOR_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="
+							Editor.setupEditCreateModal('parada_group');
+							bootstrap.Modal.getOrCreateInstance(document.getElementById('createEditNode')).show();
+						"
+						data-i18n="NEW_PARA_GROUP_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="
+							Editor.setupEditCreateModal('activity_group');
+							bootstrap.Modal.getOrCreateInstance(document.getElementById('createEditNode')).show();
+						"
+						data-i18n="NEW_ACT_GROUP_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="
+							Editor.setupEditCreateModal('document');
+							bootstrap.Modal.getOrCreateInstance(document.getElementById('createEditNode')).show();
+						"
+						data-i18n="NEW_DOCUMENT_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="
+							Editor.setupEditCreateModal('property');
+							bootstrap.Modal.getOrCreateInstance(document.getElementById('createEditNode')).show();
+						"
+						data-i18n="NEW_PROPERTY_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="
+							Editor.setupEditCreateModal('combiner');
+							bootstrap.Modal.getOrCreateInstance(document.getElementById('createEditNode')).show();
+						"
+						data-i18n="NEW_COMBINER_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="
+							Editor.setupEditCreateModal('extractor');
+							bootstrap.Modal.getOrCreateInstance(document.getElementById('createEditNode')).show();
+						"
+						data-i18n="NEW_EXTRACTOR_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="Editor.EditorUI.showEdgeModal()"
+						data-i18n="NEW_RELATION_LABEL"></button>
+					<button
+						type="button"
+						class="btn btn-primary btn-new-epoch"
+						onclick="Editor.EditorUI.showSemanticShapeModal()"
+						data-i18n="NEW_SEM_SHAPE_LABEL"></button>
+					<div class="d-flex">
+						<button
+							id="startSemanticShapeDrawing"
+							type="button"
+							class="btn btn-primary btn-new-epoch m-0 me-1"
+							onclick="ATON.fire('SemanticShapeDrawingMode', true)"
+							data-i18n="DRAW_SEM_SHAPE_LABEL"></button>
+						<button
+							id="finalizeSemanticShapeDrawing"
+							type="button"
+							class="btn btn-primary btn-new-epoch ms-1"
+							onclick="ATON.fire('SemanticShapeDrawingMode', false)"
+							disabled="!semanticShapeDrawingActive"
+							data-i18n="FINALIZE_SEM_SHAPE_LABEL"></button>
+					</div>
+				</div>
+			</div>
+
+			<div id="scene-control-panel" class="d-none">
+				<div
+					id="scene-control-panel-header"
+					class="py-1 px-2"
+					data-i18n="SCENE_CONTROLS_LABEL"></div>
+				<div id="scene-control-panel-body" class="d-flex flex-column">
+					<div class="sceneSettingSection d-flex flex-column">
+						<label for="light_intensity" class="form-label">Intensità luce ambiente</label>
+						<input
+							type="range"
+							class="form-range"
+							min="0"
+							max="5"
+							step="0.5"
+							id="light_intensity"
+							name="light_intensity" />
+
+						<label for="allProxyVisible" class="form-label allProxyVisibleLabel"
+							><input
+								type="checkbox"
+								id="allProxyVisible"
+								class="allProxyVisible"
+								onchange="Heriverse.setProxiesAlwaysVisible(this.checked)"
+								checked />
+							Proxy sempre visibili</label
+						>
+						<label for="showAllProxy" class="form-label showAllProxyLabel"
+							><input
+								type="checkbox"
+								id="showAllProxy"
+								class="showAllProxy"
+								onchange="Heriverse.showAllProxies(this.checked)" />
+							Mostra tutti i proxy</label
+						>
+					</div>
+
+					<div
+						id="relationsCheckboxSection"
+						class="d-flex flex-column justify-content-center"></div>
+					<div class="p-3 d-grid gap-3">
+						<button id="saveGraphState" type="button" class="btn btn-light btn-sm">
+							<i class="fa-solid fa-floppy-disk"></i>
+							<span data-i18n="SAVE_CHANGES_LABEL"></span>
+						</button>
+						<button id="exportGraphState" type="button" class="btn btn-light btn-sm">
+							<i class="fa-solid fa-download"></i>
+							<span data-i18n="EXPORT_SCENE_LABEL"></span>
+						</button>
+						<button id="exportSemanticShape" type="button" class="btn btn-light btn-sm">
+							<i class="fa-solid fa-download"></i>
+							<span data-i18n="EXPORT_SEM_SHAPE_LABEL"></span>
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- New epoch modal -->
+			<div
+				style="color: black"
+				class="modal fade"
+				id="newEpochModal"
+				tabindex="-1"
+				aria-labelledby="exampleModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="exampleModalLabel">Aggiungi epoca</h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div>
+								<label for="new-epoch-name" class="form-label">Nome epoca</label>
+								<input
+									id="new-epoch-name"
+									class="form-control"
+									name="new-epoch-name"
+									type="text"
+									hint="Nome epoca" />
+								<label for="new-epoch-start" class="form-label">Data d'inizio epoca</label>
+								<input
+									id="new-epoch-start"
+									name="new-epoch-start"
+									type="text"
+									hint="Inizio epoca"
+									class="form-control" />
+								<label for="new-epoch-end" class="form-label">Data di fine epoca</label>
+								<input
+									id="new-epoch-end"
+									name="new-epoch-end"
+									type="text"
+									hint="Fine epoca"
+									class="form-control" />
+								<label for="new-epoch-color" class="form-label">Colore epoca</label>
+								<input
+									id="new-epoch-color"
+									name="new-epoch-color"
+									type="color"
+									class="form-control form-control-color" />
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							<button
+								type="button"
+								data-bs-dismiss="modal"
+								onclick="Editor.addEpoch()"
+								class="btn btn-primary">
+								Fatto
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- End - New epoch modal -->
+
+			<!-- Node Modal-->
+			<div
+				style="color: black"
+				class="modal fade"
+				id="createNodeModal"
+				tabindex="-1"
+				aria-labelledby="NewNodeModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="NewNodeModalLabel">Aggiungi nuovo nodo</h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div id="inputgroup"></div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							<button
+								id="createNodeModalSaveButton"
+								type="button"
+								data-bs-dismiss="modal"
+								class="btn btn-primary">
+								Fatto
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END Node modal-->
+
+			<!-- Edge Modal-->
+			<div
+				style="color: black"
+				class="modal fade"
+				id="createEdgeModal"
+				tabindex="-1"
+				aria-labelledby="NewNodeModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" id="NewEdgeModalLabel">Aggiungi nuovo arco</h5>
+							<button
+								type="button"
+								class="btn-close"
+								data-bs-dismiss="modal"
+								aria-label="Close"></button>
+						</div>
+						<div class="modal-body">
+							<div>
+								<label for="edgetypes" class="form-label">Tipologia di arco:</label>
+								<select
+									name="edgetypes"
+									class="form-control select2_new_edge"
+									id="edgetypes"></select>
+								<label for="new-edge-from" class="form-label">Sorgente</label>
+								<select
+									class="form-select select2_new_edge"
+									id="new-edge-from"
+									name="new-edge-from"
+									aria-label="Seleziona nodo sorgente"></select>
+								<label for="new-edge-to" class="form-label">Destinazione</label>
+								<select
+									class="form-select select2_new_edge"
+									id="new-edge-to"
+									name="new-edge-to"
+									aria-label="Seleziona nodo destinazione"></select>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+							<button
+								type="button"
+								data-bs-dismiss="modal"
+								onclick="Editor.EditorUI.saveEdge()"
+								class="btn btn-primary">
+								Fatto
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END Edge modal-->
+
+			<!-- Shelf Resource Modal -->
+			<div
+				id="insertShelfResourceModal"
+				class="modal fade"
+				style="color: black"
+				tabindex="-1"
+				aria-labelledby="insertShelfResourceModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title" tabindex="0" id="insertShelfResourceModalLabel">
+								Inserisci la risorsa selezionata
+							</h5>
+						</div>
+						<div class="modal-body">
+							<div class="mb-3">
+								<label for="insertShelfResourceModalElementType" class="form-label"
+									>Tipo di elemento da inserire</label
+								>
+								<select id="insertShelfResourceModalElementType" class="form-select">
+									<option value="" selected disabled>Seleziona...</option>
+									<option value="representation">Representation Model</option>
+									<option value="document">Document</option>
+									<option value="special_find">Special Find</option>
+								</select>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button
+								id="insertShelfResourceModalCancel"
+								class="btn btn-secondary"
+								type="button"
+								data-bs-dismiss="modal">
+								Close
+							</button>
+							<button
+								id="insertShelfResourceModalInsertButton"
+								class="btn btn-primary"
+								type="button">
+								Choose node type
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END Shelf Resource Modal -->
+
+			<!-- Document Modal -->
+			<div
+				id="insertDocumentModal"
+				class="modal fade"
+				style="color: black"
+				aria-labelledby="insertDocumentModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 id="insertDocumentModalLabel" class="modal-title text-center">Passo 1 di 5</h5>
+							<button
+								class="btn-close"
+								type="button"
+								data-bs-dismiss="modal"
+								aria-label="Chiudi schermata di inserimento del documento"></button>
+						</div>
+						<div class="modal-body p-0 d-flex">
+							<aside
+								id="wizard-graph"
+								class="border-end py-4 d-flex flex-column align-items-center"
+								style="min-height: 50vh">
+								<!-- altezza complessiva -->
+								<div class="d-flex flex-column-reverse align-items-center" style="height: 100%">
+									<div class="step-circle step-complete mb-2">Start</div>
+									<div class="step-line mb-2"></div>
+
+									<div class="step-circle step-empty mb-2" data-step="1">
+										<img src="../res/graphicons/document.svg" alt="Document node" />
+									</div>
+									<div class="step-line mb-2"></div>
+
+									<div class="step-circle step-empty mb-2" data-step="2">
+										<img src="../res/graphicons/extractor.svg" alt="Extractor node" />
+									</div>
+									<div class="step-line mb-2"></div>
+
+									<div class="step-circle step-empty mb-2" data-step="3">
+										<div>+</div>
+									</div>
+									<div class="step-line mb-2"></div>
+
+									<div class="step-circle step-empty step-diabled mb-2" data-step="4">
+										<img src="../res/graphicons/combiner.svg" alt="Combiner node" />
+									</div>
+									<div class="step-line mb-2"></div>
+
+									<div class="step-circle step-empty mb-2" data-step="5">
+										<img src="../res/graphicons/property.svg" alt="Property node" />
+									</div>
+									<div class="step-line mb-2"></div>
+
+									<div class="step-circle step-empty mb-2" data-step="6">
+										<img src="../res/graphicons/US.svg" alt="Stratigraphic node" />
+									</div>
+								</div>
+							</aside>
+
+							<div class="flex-grow-1 p-4">
+								<div class="wizard-step" data-step="1">
+									<div class="text-center w-100 p-3">Seleziona un nodo DOCUMENTO esistente</div>
+									<select class="form-select"></select>
+									<div id="documentInformation">
+										<div class="text-center w-100 p-3">Crea il DOCUMENTO associato al link</div>
+										<label for="documentName" class="form-label w-100">Nome</label>
+										<input
+											type="text"
+											id="documentName"
+											placeholder="Inserisci nome"
+											class="w-100" />
+										<label for="documentDescription" class="form-label w-100">Descrizione</label>
+										<textarea
+											name="documentDescription"
+											id="documentDescription"
+											rows="3"
+											class="form-control"></textarea>
+									</div>
+								</div>
+								<div class="wizard-step" data-step="2">
+									<div class="text-center w-100 p-3">Seleziona un ESTRATTORE esistente</div>
+									<select class="form-select"></select>
+									<div id="extractorInformation">
+										<div class="text-center w-100 p-3">
+											Crea l'ESTRATTORE da associare al documento
+										</div>
+										<label for="extractorName" class="form-label w-100">Nome</label>
+										<input
+											type="text"
+											id="extractorName"
+											placeholder="Inserisci nome"
+											class="w-100" />
+										<label for="extractorDescription" class="form-label w-100">Descrizione</label>
+										<textarea
+											name="extractorDescription"
+											id="extractorDescription"
+											rows="3"
+											class="form-control"></textarea>
+									</div>
+								</div>
+								<div class="wizard-step" data-step="3">
+									<div class="text-center w-100 p-3">
+										Seleziona altri ESTRATTORI combinabili con quello corrente oppure vai al
+										passaggio successivo
+									</div>
+									<ul></ul>
+								</div>
+								<div class="wizard-step" data-step="4">
+									<div class="text-center w-100 p-3" style="opacity: 0.5">
+										Seleziona un COMBINATORE esistente
+									</div>
+									<select class="form-select" disabled></select>
+									<div id="combinerInformation" style="opacity: 0.5">
+										<label for="combinerName" class="form-label w-100">Nome</label>
+										<input
+											type="text"
+											id="combinerName"
+											placeholder="Inserisci nome"
+											disabled
+											class="w-100" />
+										<label for="combinerDescription" class="form-label w-100">Descrizione</label>
+										<textarea
+											name="combinerDescription"
+											id="combinerDescription"
+											rows="3"
+											class="form-control"
+											disabled></textarea>
+									</div>
+								</div>
+								<div class="wizard-step" data-step="5">
+									<div class="text-center w-100 p-3">Seleziona una PROPRIETA' esistente</div>
+									<select class="form-select"></select>
+									<div id="propertyInformation">
+										<div class="text-center w-100 p-3">
+											Crea la PROPRIETA' da associare al nodo stratigrafico
+										</div>
+										<label for="propertyName" class="form-label w-100">Nome</label>
+										<input
+											type="text"
+											id="propertyName"
+											placeholder="Inserisci nome"
+											class="w-100" />
+										<label for="propertyDescription" class="form-label w-100">Descrizione</label>
+										<textarea
+											name="propertyDescription"
+											id="propertyDescription"
+											rows="3"
+											class="form-control"></textarea>
+									</div>
+								</div>
+								<div class="wizard-step" data-step="6">
+									<div class="text-center w-100 p-3">
+										Seleziona una UNITA' STRATIGRAFICA esistente
+									</div>
+									<div class="text-center w-100 small p-2">
+										(Selezionare il nodo solo se non si è ricorsi al rilascio sul nodo stesso nel
+										pannello del workspace)
+									</div>
+									<select class="form-select"></select>
+								</div>
+								<div class="wizard-step" data-step="7">
+									<div class="text-uppercase text-center w-100 fw-bold p-3">Riepilogo</div>
+									<span class="w-100 p-2">Documento</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome:</strong> <span id="summaryDocumentName"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Descrizione:</strong>
+											<span id="summaryDocumentDescription"></span>
+										</li>
+									</ul>
+									<span class="w-100 p-2">Estrattore</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome:</strong> <span id="summaryExtractorName"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Descrizione:</strong>
+											<span id="summaryExtractorDescription"></span>
+										</li>
+									</ul>
+									<span class="w-100 p-2">Combiner</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome:</strong> <span id="summaryCombinerName"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Descrizione:</strong>
+											<span id="summaryCombinerDescription"></span>
+										</li>
+									</ul>
+									<span class="w-100 p-2">Proprietà</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome:</strong> <span id="summaryPropertyName"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Descrizione:</strong>
+											<span id="summaryPropertyDescription"></span>
+										</li>
+									</ul>
+									<span class="w-100 p-2">Nodo Stratigrafico</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome:</strong> <span id="summaryStratigraphicName"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Descrizione:</strong>
+											<span id="summaryStratigraphicDescription"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Tipo:</strong> <span id="summaryStratigraphicType"></span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary d-none" id="prevBtn">Indietro</button>
+							<button type="button" class="btn btn-primary" id="nextBtn">Avanti</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END Document Modal -->
+
+			<!-- Special Find Modal -->
+			<div
+				id="insertSFModal"
+				class="modal fade"
+				style="color: black"
+				aria-labelledby="insertSFModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 id="insertSFModalLabel" class="modal-title text-center">Passo 1 di 4</h5>
+							<button
+								class="btn-close"
+								type="button"
+								data-bs-dismiss="modal"
+								aria-label="Chiudi schermata di inserimento dello special find"></button>
+						</div>
+						<div class="modal-body p-0 d-flex">
+							<aside
+								id="wizard-graph"
+								class="border-end py-4 d-flex flex-column align-items-center"
+								style="min-height: 50vh">
+								<div
+									class="d-flex flex-column-reverse align-items-center"
+									style="height: 100%"></div>
+							</aside>
+							<div class="flex-grow-1 p-4">
+								<div class="wizard-step" data-step="1">
+									<div class="text-center w-100 p-3">
+										Seleziona l'EPOCA da associare al tipo di nodo scelto
+									</div>
+									<select class="form-select"></select>
+								</div>
+								<div class="wizard-step" data-step="2">
+									<div class="text-center w-100 p-3">
+										Seleziona eventuali altre EPOCHE che vedono sopravvivere il ritrovamento
+									</div>
+									<ul class="overflow-y-scroll"></ul>
+								</div>
+								<div class="wizard-step" data-step="3">
+									<div class="text-center w-100 p-3">
+										Seleziona il nodo Special Find da associare
+									</div>
+									<div class="text-center w-100 small p-2">
+										(Selezionare il nodo solo se non si è ricorsi al rilascio sul nodo stesso nel
+										pannello del workspace)
+									</div>
+									<select class="form-select"></select>
+								</div>
+								<div class="wizard-step" data-step="4">
+									<div class="text-uppercase text-center w-100 fw-bold p-3">Riepilogo</div>
+									<span class="w-100 p-2">Prima epoca</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome: </strong> <span id="summaryFirstEpochName"></span>
+										</li>
+									</ul>
+									<span class="w-100 p-2">Epoche successive</span>
+									<ul class="list-group" id="summaryNextEpochs"></ul>
+									<span class="w-100 p-2">Special Find associato</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome: </strong> <span id="summarySFName"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Descrizione: </strong> <span id="summarySFDescription"></span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary d-none" id="prevBtn">Indietro</button>
+							<button type="button" class="btn btn-primary" id="nextBtn">Avanti</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END Special Find Modal -->
+
+			<!-- RM Modal -->
+			<div
+				id="insertRMModal"
+				class="modal fade"
+				style="color: black"
+				aria-labelledby="insertRMModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered" aria-hidden="true">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 id="insertRMModalLabel" class="modal-title text-center">Passo 1 di 4</h5>
+							<button
+								class="btn-close"
+								type="button"
+								data-bs-dismiss="modal"
+								aria-label="Chiudi schermata di inserimento del modello di rappresentazione"></button>
+						</div>
+						<div class="modal-body p-0 d-flex">
+							<aside
+								id="wizard-graph"
+								class="border-end py-4 d-flex flex-column align-items-center"
+								style="min-height: 50vh">
+								<div
+									class="d-flex flex-column-reverse align-items-center"
+									style="height: 100%"></div>
+							</aside>
+							<div class="flex-grow-1 p-4">
+								<div class="wizard-step" data-step="1">
+									<div class="text-center w-100 p-3">
+										Seleziona l'EPOCA da associare al tipo di nodo scelto
+									</div>
+									<select class="form-select"></select>
+								</div>
+								<div class="wizard-step" data-step="2">
+									<div class="text-center w-100 p-3">
+										Seleziona eventuali altre EPOCHE che vedono sopravvivere il ritrovamento
+									</div>
+									<ul></ul>
+								</div>
+								<div class="wizard-step" data-step="3">
+									<div class="text-center w-100 p-3">
+										Seleziona il nodo STRATIGRAFICO da associare
+									</div>
+									<div class="text-center w-100 small p-2">
+										(Selezionare il nodo solo se non si è ricorsi al rilascio sul nodo stesso nel
+										pannello del workspace)
+									</div>
+									<select class="form-select"></select>
+								</div>
+								<div class="wizard-step" data-step="4">
+									<div class="text-uppercase text-center w-100 fw-bold">Riepilogo</div>
+									<span class="w-100 p-2">Prima epoca</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome: </strong> <span id="summaryFirstEpochName"></span>
+										</li>
+									</ul>
+									<span class="w-100 p-2">Epoche successive</span>
+									<ul class="list-group" id="summaryNextEpochs"></ul>
+									<span class="w-100 p-2">Unità Stratigrafica associata</span>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<strong>Nome: </strong> <span id="summarySUName"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Descrizione: </strong> <span id="summarySUDescription"></span>
+										</li>
+										<li class="list-group-item">
+											<strong>Tipo: </strong> <span id="summarySUType"></span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary d-none" id="prevBtn">Indietro</button>
+							<button type="button" class="btn btn-primary" id="nextBtn">Avanti</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END RM Modal -->
+
+			<div id="createNewGraphModal" class="modal fade" style="color: black">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 id="createNewGraphModalTitle" class="modal-title text-start flex-grow-1">
+								Crea un nuovo grafo
+							</h5>
+							<button
+								class="btn-close"
+								type="button"
+								data-bs-dismiss="modal"
+								aria-label="Chiudi il pannello di inserimento dati"></button>
+						</div>
+						<div class="modal-body">
+							<label for="createNewGraphName" id="createNewGraphNameLabel" class="form-label fs-6"
+								>Nome</label
+							>
+							<input
+								type="text"
+								id="createNewGraphName"
+								name="createNewGraphName"
+								aria-labelledby="createNewGraphNameLabel"
+								class="form-control" />
+							<label
+								for="createNewGraphDescription"
+								id="createNewGraphDescriptionLabel"
+								class="form-label fs-6"
+								>Descrizione</label
+							>
+							<input
+								type="text"
+								id="createNewGraphDescription"
+								name="createNewGraphDescription"
+								aria-labelledby="createNewGraphDescriptionLabel"
+								class="form-control" />
+							<label
+								for="createNewGraphLicense"
+								id="createNewGraphLicenseLabel"
+								class="form-label fs-6"
+								>Licenza</label
+							>
+							<input
+								type="text"
+								id="createNewGraphLicense"
+								name="createNewGraphLicense"
+								aria-labelledby="createNewGraphLicenseLabel"
+								class="form-control" />
+							<label
+								for="createNewGraphAuthors"
+								id="createNewGraphAuthorsLabel"
+								class="form-label fs-6"
+								>Autori (inserire i nominativi separati da virgole)</label
+							>
+							<input
+								type="text"
+								id="createNewGraphAuthors"
+								name="createNewGraphAuthors"
+								aria-labelledby="createNewGraphAuthorsLabel"
+								class="form-control" />
+							<label
+								for="createNewGraphEmbargo"
+								id="createNewGraphEmbargoLabel"
+								class="form-label fs-6"
+								>Data di embargo</label
+							>
+							<input
+								type="text"
+								id="createNewGraphEmbargo"
+								name="createNewGraphEmbargo"
+								aria-labelledby="createNewGraphEmbargoLabel"
+								class="form-control" />
+							<label
+								for="createNewGraphPanorama"
+								id="createNewGraphPanoramaLabel"
+								class="form-label fs-6"
+								>Panorama</label
+							>
+							<input
+								type="file"
+								id="createNewGraphPanorama"
+								accept="image/*"
+								name="createNewGraphPanorama"
+								aria-labelledby="createNewGraphPanoramaLabel"
+								class="form-control" />
+						</div>
+						<div class="modal-footer">
+							<button id="createGraph" class="btn" onclick="Editor.EditorUI.saveGraph()">
+								Fatto
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal per creazione dinamica -->
+			<div
+				id="dynamicModalPathCreation"
+				class="modal fade"
+				style="color: black"
+				aria-labelledby="insertRMModalLabel"
+				aria-hidden="true">
+				<div class="modal-dialog modal-dialog-centered modal-lg">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 id="wizardTitle" class="modal-title text-start flex-grow-1"></h5>
+							<button
+								class="btn-close"
+								type="button"
+								data-bs-dismiss="modal"
+								aria-label="Chiudi il pannello di inserimento dati"></button>
+						</div>
+						<div class="modal-body p-0 d-flex">
+							<aside
+								id="wizardGraph"
+								class="border-end p-3 d-flex flex-column align-items-center"
+								style="height: fit-content">
+								<div
+									class="d-flex flex-column-reverse align-items-center justify-content-center"
+									style="height: 100%"></div>
+							</aside>
+							<div id="wizardContent" class="flex-grow-1 p-4"></div>
+						</div>
+						<div class="modal-footer">
+							<div class="">
+								<button type="button" class="btn btn-outline-secondary btn-sm" id="prevPathBtn">
+									<i class="fa fa-arrow-left" aria-hidden="true"></i> Path
+								</button>
+								<span class="">1/3</span>
+								<button type="button" class="btn btn-outline-secondary btn-sm" id="nextPathBtn">
+									Path <i class="fa fa-arrow-right" aria-hidden="true"></i>
+								</button>
+							</div>
+							<div class="toggle d-flex align-items-center flex-grow-1 me-2" id="combinerToggle">
+								<input type="checkbox" id="combinerOption" />
+								<label for="combinerOption" class="slider">
+									<span class="combinerSwitch"></span>
+								</label>
+							</div>
+
+							<button
+								type="button"
+								class="btn btn-secondary d-none"
+								id="prevBtn"
+								data-i18n="BACK_BUTTON_TEXT">
+								Indietro
+							</button>
+							<button
+								type="button"
+								class="btn btn-primary"
+								id="nextBtn"
+								data-i18n="NEXT_BUTTON_TEXT">
+								Avanti
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END Modal per creazione dinamica -->
+
+			<!-- Modal per creazione dei Period -->
+			<div id="savePeriodModal" class="modal fade" style="color: black">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 id="savePeriodModalTitle" class="modal-title text-start flex-grow-1">
+								Salva il Periodo
+							</h5>
+							<button
+								class="btn-close"
+								type="button"
+								data-bs-dismiss="modal"
+								aria-label="Chiudi il pannello di inserimento dati"></button>
+						</div>
+						<div class="modal-body">
+							<div class="mb-3">
+								<label id="savePeriodNameLabel" for="savePeriodName" class="form-label fs-6"
+									>Name</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									name="savePeriodName"
+									id="savePeriodName"
+									aria-describedby="helpId" />
+							</div>
+							<div class="mb-3">
+								<label
+									id="savePeriodStartLabel"
+									for="savePeriodStart"
+									class="form-label fs-6"
+									data-i18n="START_DATE"
+									>Inizio periodo</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									name="savePeriodStart"
+									id="savePeriodStart"
+									aria-describedby="savePeriodStartLabel" />
+							</div>
+							<div class="mb-3">
+								<label
+									id="savePeriodEndLabel"
+									for="savePeriodEnd"
+									class="form-label fs-6"
+									data-i18n="END_DATE"
+									>Fine periodo</label
+								>
+								<input
+									type="text"
+									class="form-control"
+									name="savePeriodEnd"
+									id="savePeriodEnd"
+									aria-describedby="savePeriodEndLabel" />
+							</div>
+							<div class="mb-3">
+								<label id="savePeriodColorLabel" for="savePeriodColor" class="form-label fs-6"
+									>Colore</label
+								>
+								<input
+									type="color"
+									class="form-control"
+									name="savePeriodColor"
+									id="savePeriodColor"
+									aria-describedby="savePeriodColorLabel" />
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button
+								id="saveBtn"
+								class="btn btn-primary"
+								data-i18n="DONE_BUTTON_TEXT"
+								onclick="Editor.EditorUI.savePeriod()">
+								Fatto
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- END Modal per creazione dei Period -->
+
+			<div id="createEditNode" class="modal fade text-dark">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title text-start flex-grow-1"></h5>
+							<button
+								class="btn btn-close"
+								type="button"
+								data-bs-dismiss="modal"
+								aria-label="Chiudi il pannello"></button>
+						</div>
+						<div class="modal-body"></div>
+						<div class="modal-footer">
+							<button id="doneButton" data-i18n="DONE_BUTTON_TEXT" class="btn btn-primary">
+								Fatto
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div id="semanticShapeDownloadModal" class="modal fade text-dark">
+				<div class="modal-dialog modal-dialog-centered">
+					<div class="modal-content">
+						<div class="modal-header">
+							<h5 class="modal-title text-start flex-grow-1">Esporta le Semantic Shape</h5>
+							<button
+								class="btn btn-close"
+								type="button"
+								data-bs-dismiss="modal"
+								aria-label="Chiudi il pannello"></button>
+						</div>
+						<div class="modal-body" style="max-height: 70vh; overflow-y: scroll"></div>
+						<div class="modal-footer">
+							<button
+								id="exportSSBtn"
+								class="btn btn-primary"
+								data-i18n="EXPORT_SEMANTIC_SHAPE_BUTTON">
+								Esporta i selezionati
+							</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!--Users collaborative panel-->
+			<div id="users-panel">
+				<div id="users-panel-header">
+					<div class="users-panel-header-left">
+						<i class="fas fa-users"></i>
+						<span>Utenti</span>
+						<span id="users-panel-count" class="users-panel-count">0</span>
+					</div>
+					<i class="fas fa-chevron-up users-panel-toggle-icon"></i>
+				</div>
+				<ul id="users-panel-list"></ul>
+			</div>
+		</div>
+	</body>
+</html>
