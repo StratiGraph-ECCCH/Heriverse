@@ -1943,8 +1943,16 @@ Heriverse.setupSemanticShapeMaterial = async (ssc_file) => {
 		const nodes_info = data.node_styles;
 		for (let nodeType in nodes_info) {
 			const type_style = nodes_info[nodeType].style || null;
-			if (!type_style?.material?.color) continue;
-			const { r, g, b } = type_style.material.color;
+			// s3dgraphy unified the material-colour key on `rgba_color` (visual
+			// rules 1.6.6); `color` is the legacy spelling the 13 stratigraphic
+			// types used to carry. Read the new one first and keep the old as
+			// tolerance, so this works against a vendored copy from either side
+			// of the rename — and so a re-vendor cannot silently strip the
+			// proxies of their material.
+			const material_color =
+				type_style?.material?.rgba_color ?? type_style?.material?.color;
+			if (!material_color) continue;
+			const { r, g, b } = material_color;
 			Heriverse.semantic_shapes_materials[nodeType + "_ON"] = new THREE.MeshStandardMaterial({
 				color: new THREE.Color(r, g, b),
 				transparent: true,
@@ -1959,6 +1967,25 @@ Heriverse.setupSemanticShapeMaterial = async (ssc_file) => {
 				depthTest: !Heriverse._bProxiesAlwaysVis,
 				opacity: 0.0,
 			});
+		}
+
+		// `UTR` is the pre-1.6 name of what the Extended Matrix now calls `TSU`
+		// (E.D., 2026-08-02). It is still in HeriverseGraph.stratigraphicTypes,
+		// and datasets authored before the rename still carry it, but it no
+		// longer exists in em_visual_rules — so those proxies would come out
+		// with no material at all. Alias the legacy name onto the current one
+		// instead of dropping it: old graphs keep rendering, and the day the
+		// data is migrated this block simply stops matching anything.
+		const LEGACY_TYPE_ALIASES = { UTR: "TSU" };
+		for (const [legacy, current] of Object.entries(LEGACY_TYPE_ALIASES)) {
+			for (const state of ["_ON", "_OFF"]) {
+				if (
+					!Heriverse.semantic_shapes_materials[legacy + state] &&
+					Heriverse.semantic_shapes_materials[current + state]
+				)
+					Heriverse.semantic_shapes_materials[legacy + state] =
+						Heriverse.semantic_shapes_materials[current + state];
+			}
 		}
 	} catch (error) {
 		console.error("Failed fetching semantic material JSON:", error);

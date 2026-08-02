@@ -1,702 +1,982 @@
 {
-	"formal_language": "EM",
-	"version": "1.5.0",
-	"node_styles": {
-		"US": {
-			"file_3d": "src/3D/US.glb",
-			"file_2d": "src/2D/US.png",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.328,
-						"g": 0.033,
-						"b": 0.033,
-						"a": 1.0
-					}
-				},
-				"border_color": "#540909",
-				"fill_color": "#F0F0F0",
-				"border_style": "solid",
-				"shape": "rectangle"
-			},
-			"label_position": "over"
-		},
-		"USVn": {
-			"file_3d": "src/3D/USVn.glb",
-			"2d_file_rast": "src/2D/US.png",
-			"2d_file_vect": "src/2D/US.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.031,
-						"g": 0.191,
-						"b": 0.026,
-						"a": 1.0
-					}
-				},
-				"border_color": "#083107",
-				"fill_color": "#000000",
-				"border_style": "solid",
-				"shape": "hexagon"
-			},
-			"label_position": "over"
-		},
-		"USVs": {
-			"3d_file": "src/3D/USVs.glb",
-			"2d_file_rast": "src/2D/USVs.png",
-			"2d_file_vect": "src/2D/USVs.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.018,
-						"g": 0.275,
-						"b": 0.799,
-						"a": 1.0
-					}
-				},
-				"border_color": "#0546CC",
-				"fill_color": "#CCCCCC",
-				"border_style": "solid",
-				"shape": "parallelogram"
-			},
-			"label_position": "over"
-		},
-		"VSF": {
-			"3d_file": "src/3D/VSF.glb",
-			"2d_file_rast": "src/2D/VSF.png",
-			"2d_file_vect": "src/2D/VSF.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.439,
-						"g": 0.346,
-						"b": 0.119,
-						"a": 1.0
-					}
-				},
-				"border_color": "#70581E",
-				"fill_color": "#CCCCCC",
-				"border_style": "solid",
-				"shape": "octagon"
-			},
-			"label_position": "over"
-		},
-		"SF": {
-			"3d_file": "src/3D/SF.glb",
-			"2d_file_rast": "src/2D/SF.png",
-			"2d_file_vect": "src/2D/SF.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.686,
-						"g": 0.508,
-						"b": 0.029,
-						"a": 1.0
-					}
-				},
-				"border_color": "#AF8208",
-				"fill_color": "#CCCCCC",
-				"border_style": "solid",
-				"shape": "octagon"
-			},
-			"label_position": "over"
-		},
-		"USD": {
-			"3d_file": "src/3D/USD.glb",
-			"2d_file_rast": "src/2D/USD.png",
-			"2d_file_vect": "src/2D/USD.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.549,
-						"g": 0.103,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#8C1A00",
-				"fill_color": "#F5F5F5",
-				"border_style": "solid",
-				"shape": "rounded_rectangle"
-			},
-			"label_position": "over"
-		},
-		"serSU": {
-			"3d_file": "src/3D/serSU.glb",
-			"2d_file_rast": "src/2D/serSU.png",
-			"2d_file_vect": "src/2D/serSU.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.328,
-						"g": 0.033,
-						"b": 0.033,
-						"a": 1.0
-					}
-				},
-				"border_color": "#540909",
-				"fill_color": "#EFEFEF",
-				"border_style": "solid",
-				"shape": "ellipse"
-			},
-			"label_position": "over"
-		},
-		"serUSVn": {
-			"3d_file": "src/3D/serUSV.glb",
-			"2d_file_rast": "src/2D/serUSV.png",
-			"2d_file_vect": "src/2D/serUSV.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.031,
-						"g": 0.191,
-						"b": 0.026,
-						"a": 1.0
-					}
-				},
-				"border_color": "#083107",
-				"fill_color": "#000000",
-				"border_style": "solid",
-				"shape": "ellipse"
-			},
-			"label_position": "over"
-		},
-		"serUSVs": {
-			"file_3d": "src/3D/serUSVs.glb",
-			"2d_file_rast": "src/2D/serUSVs.png",
-			"2d_file_vect": "src/2D/serUSV.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.018,
-						"g": 0.275,
-						"b": 0.799,
-						"a": 1.0
-					}
-				},
-				"border_color": "#0546CC",
-				"fill_color": "#000000",
-				"border_style": "solid",
-				"shape": "ellipse"
-			},
-			"label_position": "over"
-		},
-		"TSU": {
-			"3d_file": "src/3D/TSU.glb",
-			"2d_file_rast": "src/2D/TSU.png",
-			"2d_file_vect": "src/2D/TSU.svg",
-			"style": {
-				"material": {
-					"color": {
-						"r": 0.328,
-						"g": 0.033,
-						"b": 0.033,
-						"a": 1.0
-					}
-				},
-				"border_color": "#808080",
-				"fill_color": "#DDDDDD",
-				"border_style": "dotted",
-				"shape": "rectangle"
-			},
-			"label_position": "over"
-		},
-		"BR": {
-			"3d_file": "src/3D/BR.glb",
-			"2d_file_rast": "src/2D/continuity.png",
-			"2d_file_vect": "src/2D/continuity.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.0,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#000000",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "diamond"
-			},
-			"label_position": "center"
-		},
-		"SE": {
-			"3d_file": "src/3D/SE.glb",
-			"2d_file_rast": "src/3D/SE.png",
-			"2d_file_vect": "src/3D/SE.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#000000",
-				"fill_color": "#FFFFFF",
-				"border_style": "dashed",
-				"shape": "triangle"
-			},
-			"label_position": "over"
-		},
-		"PROP": {
-			"3d_file": "src/3D/property.glb",
-			"2d_file_rast": "src/2D/property.png",
-			"2d_file_vect": "src/2D/property.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#000000",
-				"fill_color": "#FFFFFF",
-				"border_style": "dashed",
-				"shape": "circle"
-			},
-			"label_position": "over"
-		},
-		"COMB": {
-			"3d_file": "src/3D/combiner.glb",
-			"2d_file_rast": "src/2D/combiner.png",
-			"2d_file_vect": "src/2D/combiner.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FFCC00",
-				"fill_color": "#FFFFFF",
-				"border_style": "dashed",
-				"shape": "hexagon"
-			},
-			"label_position": "bottom"
-		},
-		"EXT": {
-			"3d_file": "src/3D/extractor.glb",
-			"2d_file_rast": "src/2D/extractor.png",
-			"2d_file_vect": "src/2D/extractor.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#0033CC",
-				"fill_color": "#F0F0F0",
-				"border_style": "solid",
-				"shape": "pentagon"
-			},
-			"label_position": "bottom"
-		},
-		"DOC": {
-			"3d_file": "src/3D/document.glb",
-			"2d_file_rast": "src/2D/document.png",
-			"2d_file_vect": "src/2D/document.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#000000",
-				"fill_color": "#E0E0E0",
-				"border_style": "solid",
-				"shape": "ellipse"
-			},
-			"label_position": "over"
-		},
-		"EP": {
-			"3d_file": "src/3D/epoch.glb",
-			"2d_file_rast": "src/2D/epoch.png",
-			"2d_file_vect": "src/2D/epoch.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#009933",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "rectangle"
-			},
-			"label_position": "over"
-		},
-		"ANG": {
-			"file_3d": "src/3D/activity.glb",
-			"2d_file_rast": "src/2D/activity.png",
-			"2d_file_vect": "src/2D/activity.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#9966CC",
-				"fill_color": "#FFFFFF",
-				"border_style": "dashed",
-				"shape": "ellipse"
-			},
-			"label_position": "over"
-		},
-		"AUTH": {
-			"file_3d": "src/3D/author.glb",
-			"2d_file_rast": "src/2D/author.png",
-			"2d_file_vect": "src/2D/author.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FF6600",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "star"
-			},
-			"label_position": "over"
-		},
-		"LINK": {
-			"file_3d": "src/3D/link.glb",
-			"2d_file_rast": "src/2D/link.png",
-			"2d_file_vect": "src/2D/link.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FF6600",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "chain"
-			},
-			"label_position": "over"
-		},
-		"GEO": {
-			"file_3d": "src/3D/geo.glb",
-			"2d_file_rast": "src/2D/geo.png",
-			"2d_file_vect": "src/2D/geo.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FF6600",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "globe"
-			},
-			"label_position": "over"
-		},
-		"RM": {
-			"file_3d": "src/3D/rm.glb",
-			"2d_file_rast": "src/2D/rm.png",
-			"2d_file_vect": "src/2D/rm.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FF6600",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "model"
-			},
-			"label_position": "over"
-		},
-		"RMDoc": {
-			"file_3d": "src/3D/rmdoc.glb",
-			"2d_file_rast": "src/2D/rmdoc.png",
-			"2d_file_vect": "src/2D/rmdoc.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FF6600",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "model"
-			},
-			"label_position": "over"
-		},
-		"RMSF": {
-			"file_3d": "src/3D/rmsf.glb",
-			"2d_file_rast": "src/2D/rmsf.png",
-			"2d_file_vect": "src/2D/rmsf.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FF6600",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "model"
-			},
-			"label_position": "over"
-		},
-		"SS": {
-			"file_3d": "src/3D/ss.glb",
-			"2d_file_rast": "src/2D/ss.png",
-			"2d_file_vect": "src/2D/ss.svg",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FF6600",
-				"fill_color": "#FFFFFF",
-				"border_style": "solid",
-				"shape": "model"
-			},
-			"label_position": "over"
-		},
-		"unknown": {
-			"file_3d": "src/3D/unknown.glb",
-			"file_2d": "src/2D/unknown.png",
-			"style": {
-				"material": {
-					"rgba_color": {
-						"r": 0.5,
-						"g": 0.0,
-						"b": 0.0,
-						"a": 1.0
-					}
-				},
-				"border_color": "#FF0000",
-				"fill_color": "#FFFFFF",
-				"border_style": "dotted",
-				"shape": "question_mark"
-			},
-			"label_position": "center"
-		}
-	},
-	"edge_style": {
-		"is_before": {
-			"style": {
-				"color": "#FF0000",
-				"line_style": "solid",
-				"width": 2
-			},
-			"label": "Is Before"
-		},
-		"is_after": {
-			"style": {
-				"color": "#FF0000",
-				"line_style": "solid",
-				"width": 2
-			},
-			"label": "Is After"
-		},
-		"has_same_time": {
-			"style": {
-				"color": "#00FF00",
-				"line_style": "solid",
-				"width": 2
-			},
-			"label": "Contemporaneous Elements"
-		},
-		"changed_from": {
-			"style": {
-				"color": "#0000FF",
-				"line_style": "dotted",
-				"width": 2
-			},
-			"label": "Temporal Transformation"
-		},
-		"has_data_provenance": {
-			"style": {
-				"color": "#FFA500",
-				"line_style": "dashed",
-				"width": 1.5
-			},
-			"label": "Data Provenance"
-		},
-		"contrasts_with": {
-			"style": {
-				"color": "#800080",
-				"line_style": "dashed-dotted",
-				"width": 1.5
-			},
-			"label": "Contrasting Properties"
-		},
-		"has_first_epoch": {
-			"style": {
-				"color": "#008000",
-				"line_style": "solid",
-				"width": 2
-			},
-			"label": "Has First Epoch"
-		},
-		"survive_in_epoch": {
-			"style": {
-				"color": "#FF69B4",
-				"line_style": "dotted",
-				"width": 1.5
-			},
-			"label": "Survives In Epoch"
-		},
-		"is_in_activity": {
-			"style": {
-				"color": "#1E90FF",
-				"line_style": "solid",
-				"width": 2
-			},
-			"label": "Part of Activity"
-		},
-		"has_property": {
-			"style": {
-				"color": "#FFD700",
-				"line_style": "dashed",
-				"width": 1.5
-			},
-			"label": "Has Property"
-		},
-		"extracted_from": {
-			"style": {
-				"color": "#A52A2A",
-				"line_style": "dotted",
-				"width": 1.5
-			},
-			"label": "Extracted From"
-		},
-		"combines": {
-			"style": {
-				"color": "#FF6347",
-				"line_style": "solid",
-				"width": 2
-			},
-			"label": "Combines"
-		},
-		"has_timebranch": {
-			"style": {
-				"color": "#4682B4",
-				"line_style": "solid",
-				"width": 2
-			},
-			"label": "Included in Timebranch"
-		},
-		"generic_connection": {
-			"style": {
-				"color": "#808080",
-				"line_style": "dashed",
-				"width": 1
-			},
-			"label": "Generic Connection"
-		},
-		"has_linked_resource": {
-			"style": {
-				"color": "#9400D3",
-				"line_style": "solid",
-				"width": 1.5
-			},
-			"label": "Has Link"
-		},
-		"has_semantic_shape": {
-			"style": {
-				"color": "#4B0082",
-				"line_style": "dotted",
-				"width": 1.5
-			},
-			"label": "Has Semantic Shape"
-		},
-		"has_representation_model": {
-			"style": {
-				"color": "#8A2BE2",
-				"line_style": "dashed",
-				"width": 1.5
-			},
-			"label": "Has Representation Model"
-		},
-		"is_in_paradata_nodegroup": {
-			"style": {
-				"color": "#FF7F50",
-				"line_style": "solid",
-				"width": 1.5
-			},
-			"label": "Belongs to a Paradata Node Group"
-		},
-		"has_paradata_nodegroup": {
-			"style": {
-				"color": "#FF4500",
-				"line_style": "solid",
-				"width": 1.5
-			},
-			"label": "Is connected to a Paradata Node Group"
-		},
-		"has_author": {
-			"style": {
-				"color": "#DA70D6",
-				"line_style": "dashed",
-				"width": 1.5
-			},
-			"label": "Has Author"
-		},
-		"has_geoposition": {
-			"style": {
-				"color": "#2E8B57",
-				"line_style": "dotted",
-				"width": 1.5
-			},
-			"label": "Has Geoposition"
-		},
-		"is_in_timebranch": {
-			"style": {
-				"color": "#4169E1",
-				"line_style": "solid",
-				"width": 1.5
-			},
-			"label": "Included in Timebranch"
-		}
-	}
+  "formal_language": "EM",
+  "version": "1.6.7",
+  "_note_material_vs_qualia_color": [
+    "DUE COSE DIVERSE CHE SI CHIAMANO ENTRAMBE color. Non confonderle: e gia successo.",
+    "1) QUI, in node_styles.<tipo>.style.material.rgba_color — il COLORE DEL MATERIALE BLENDER del proxy 3D, in float LINEARI. UNA sola chiave: `rgba_color`. Fino a S8 il file ne usava due (`color` sui 13 tipi stratigrafici, `rgba_color` sugli altri) e get_material_color() ne leggeva una sola, restituendo None per 21 tipi su 38; ora sono unificate e la vecchia `color` e letta solo come tolleranza verso file scritti prima. Un tipo che non diventa mai una mesh NON ha material affatto (i contenitori di gruppo, e da S7 i dieci nodi che rendono per icona): per loro get_material_color() torna None, ed e corretto.",
+    "1-bis) SEMPRE QUI ma diverso: `border_color` e `fill_color` sono gli HEX sRGB del disegno 2D (canvas EMStudio, GraphML yEd). Stessa idea di colore, altro spazio e altro consumatore — EMStudio legge questi e non tocca mai `material`. Convivono di proposito: material = LINEARE per Blender, hex = sRGB per lo schermo.",
+    "2) ALTROVE, in em_qualia_types.json, la qualia `color` (getty_aat 300080438, data_type controlled_vocabulary, vocabulary_source munsell_or_aat) — il COLORE PERCEPITO della superficie o del materiale reale, rilevato in scavo e classificato Munsell/AAT. E un dato archeologico sul mondo, non un parametro di rendering: non ha niente a che vedere con questo file e non va tenuto in sincronia con esso.",
+    "In breve: qui si decide di che colore DISEGNARE una US; li si registra di che colore ERA."
+  ],
+  "_changelog": {
+    "1.6.7": "S10 — curato il colore di SE (StratigraphicEventNode), l'ultimo segnaposto rimasto fra i tipi che qualcuno disegna davvero. Era #BC0000, un rosso mai scelto che contraddiceva il proprio border_color nero, e il node datamodel dichiarava il simbolo 'to be defined': non c'era una decisione da rispettare, c'era un buco. Ora TEAL #2A8C8C, material lineare (0.023, 0.262, 0.262), con border_color coerente — la famiglia cromatica delle attivita, l'unica del linguaggio che significa 'e successo qualcosa' invece di 'qualcosa c'e'. Aggiornato di conseguenza il campo symbol nel node datamodel.",
+    "1.6.6": "S8 — unificata la chiave del colore-materiale su `rgba_color`. Rinominate le 14 voci che usavano `style.material.color` (i 13 tipi stratigrafici piu UL): valori invariati, nessun altro campo toccato. Ora tutte le 24 voci con un material parlano la stessa chiave. get_material_color() legge `rgba_color` come autoritativa e mantiene `color` solo come tolleranza per file scritti prima della rinomina. Gli hex 2D border_color/fill_color NON sono stati toccati: sono un'altra cosa (sRGB per il canvas) e hanno un altro consumatore (EMStudio). Verificato che i 14 materiali Blender di EMtools producono rgb identici a prima.",
+    "1.6.5": "S7 — applicate le decisioni E.D. sull'inventario dei material segnaposto. TOLTO il blocco `material` a 10 tipi che non diventano mai una mesh e rendono per icona o forma (PROP, COMB, EXT, DOC, EP, AUTH, LINK, GEO, SS, unknown): il loro colore 2D resta in border_color/fill_color, e get_material_color ora restituisce None come per i 4 contenitori di gruppo. RIMOSSA del tutto la voce `ANG`, duplicato legacy di ActivityNodeGroup senza alcun consumatore in s3Dgraphy, EM-blender-tools o EMStudio (GRAPH, citato nella stessa nota della 1.6.0, resta perche e usato). AGGIUNTO `UL` (Working Unit), unico tipo stratigrafico che ne era privo: 2D dal simbolo del datamodel (rettangolo bianco, bordo arancio #D86400), material 3D uguale al rosso US per decisione E.D. RM/RMDoc/RMSF e SE lasciati invariati per decisione E.D. Nessuno dei 13 colori stratigrafici esistenti e stato modificato.",
+    "1.6.4": "Sola documentazione: aggiunta _note_material_vs_qualia_color per fissare la distinzione fra il colore di display di questo file (node_styles.*.style.material, chiavi legacy color/rgba_color, stesso concetto) e la qualia `color` di em_qualia_types.json (colore percepito Munsell/AAT). Nessuno stile modificato. Inventario dei 15 material segnaposto in .claude/wip/colori-15-proposta.md, in attesa di decisione E.D.",
+    "1.6.3": "N7 — added NARR (NarrativeNode, DP-79), the only node type with no entry here: it fell through to `unknown` and rendered as a red dotted question mark on every canvas. Neutral grey like GRAPH because a narrative is a meta-level object over the graph, not a claim about the site; solid border rather than GRAPH's dashed because it is a real authored object, not an anchor for metadata. Raster src/2D/narrative.png (128px); the .svg does not exist yet and the renderer takes the raster.",
+    "1.6.2": "Q-C — the geometry axis is the scale of METRIC AUTHORITY OF PLACEMENT, and it is authoritative on the RMDoc (the spatial instance), not on the Document. Added the `symbolic` rung (#8C8C8C neutral grey, border_width 4.0) as the LOWEST step of the ladder: a base that is not metric at all (not-to-scale map, schematic plan, sketch). Full ladder: reality_based -> observable -> asserted -> symbolic; `em_based` is unchanged and is NOT a rung of it but a provenance statement. Grey is deliberately distinct from the BLACK of canonical_unknown ('not classified yet' vs 'classified as making no metric claim'). Position (X,Y,Z + rotation) lives on the RMDoc and nowhere else; a Document may mirror the value on its yEd border for diagram convenience but carries no position. NOTE: the reference node for `symbolic` is not yet in templates/em_palette_template.graphml — that file must be edited in yEd, not by hand.",
+    "1.6.1": "Fix border_color to the correct sRGB display hex against the EM 1.3 standard colour table. ROOT CAUSE: border_color was generated by writing the LINEAR material.color straight to hex (0.328 -> 0x54 -> #540909) instead of converting linear->sRGB (0.328 -> 0.608 -> 0x9B -> #9B3333). material.color stays LINEAR (Blender convention); border_color is the sRGB display value = the EM 1.3 standard Hex column. Corrected borders: US/serSU/TSU #540909->#9B3333, SF #AF8208->#D8BD30, VSF #70581E->#B19F61, USVs/serUSVs #0546CC->#248FE7, USVn/serUSVn #083107->#31792D, USN #8C8C8C->#C4C4C4 (sRGB of its 0.55 grey). US/USVs/USVn/SF/VSF now match the EM 1.3 table exactly; TSU (US-red material) and USN follow the same rule. Also reverted USVs/USVn/serUSVs/serUSVn material.color, which an earlier dev8 pass had wrongly overwritten with sRGB values, back to the canonical LINEAR values (USVs/serUSVs 0.018,0.275,0.799; USVn/serUSVn 0.031,0.191,0.026). fill_color unchanged (US/SF white, USVs/USVn black per the 2D icons). Then completed full coherence (EM 1.5 table for USD + 'RSF is red like US'): recomputed the last linear-as-hex materials to true LINEAR so sRGB(material)==border_color for EVERY type (and Blender 3D now matches the 2D display) — RSF material (0.608,0.2,0.2)->(0.328,0.033,0.033)=US red (border #9B3333); USD/serUSD material (0.847,0.392,0)->(0.687,0.127,0)=sRGB^-1(#D86400) (border #D86400 unchanged). Net rule for the whole file: material.color = LINEAR, border_color = sRGB(material) = the EM standard Hex.",
+    "1.6.0": "Version realigned to track the EM language version (EM 1.6); supersedes the 1.5.x line. Added canonical group-container styles for ActivityNodeGroup, ParadataNodeGroup and TimeBranchNodeGroup (mirroring the existing LocationNodeGroup pattern): neutral grey container (fill #F5F5F5, dashed #000000 border, roundrectangle) distinguished by the group title-tab colour in `label_background` — Activity #CCFFFF, Paradata #FFCC99, TimeBranch #99CC00 (green). Sourced from the point-of-truth palette template (templates/em_palette_template.graphml, nodes Att.[xx] / US[xxx]_PD / TB.0), aligning em_visual_rules with the GraphML palette. Previously ParadataNodeGroup and TimeBranchNodeGroup both resolved through the shared grey 'GRAPH' style and could not be told apart; ActivityNodeGroup rendered via the legacy purple-ellipse 'ANG'. Legacy 'ANG' and 'GRAPH' styles retained unchanged for back-compat with other consumers.",
+    "1.5.3": "Fix USD / serUSD material colour: RGB was (0.549, 0.103, 0.0) = #8C1A00 (red), should be #D86400 (orange) to match the canonical USD documentary colour used in the GraphML palette template, node_registry defaults and document_variant_styles.observable. USD border_color also corrected from #8C1A00 to #D86400 (serUSD border was already correct).",
+    "1.5.2": "Added RSF (Reused Special Find / spolia) node style — octagon, red border (#9B3333), white fill. Sibling of SF/VSF, distinguished by border colour. Originating DP: DP-26.",
+    "1.5.1": "Added LocationNodeGroup node style (dashed roundrectangle, kind-based border colour) and is_in_location edge style with primary_modifier override.",
+    "1.5.0": "Initial EM 1.5 visual rules."
+  },
+  "node_styles": {
+    "US": {
+      "file_3d": "src/3D/US.glb",
+      "file_2d": "src/2D/US.png",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.328,
+            "g": 0.033,
+            "b": 0.033,
+            "a": 1.0
+          }
+        },
+        "border_color": "#9B3333",
+        "fill_color": "#F0F0F0",
+        "border_style": "solid",
+        "shape": "rectangle",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "USVn": {
+      "file_3d": "src/3D/USVn.glb",
+      "2d_file_rast": "src/2D/US.png",
+      "2d_file_vect": "src/2D/US.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.031,
+            "g": 0.191,
+            "b": 0.026,
+            "a": 1.0
+          }
+        },
+        "border_color": "#31792D",
+        "fill_color": "#000000",
+        "border_style": "solid",
+        "shape": "hexagon",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "USVs": {
+      "3d_file": "src/3D/USVs.glb",
+      "2d_file_rast": "src/2D/USVs.png",
+      "2d_file_vect": "src/2D/USVs.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.018,
+            "g": 0.275,
+            "b": 0.799,
+            "a": 1.0
+          }
+        },
+        "border_color": "#248FE7",
+        "fill_color": "#000000",
+        "border_style": "solid",
+        "shape": "parallelogram",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "VSF": {
+      "3d_file": "src/3D/VSF.glb",
+      "2d_file_rast": "src/2D/VSF.png",
+      "2d_file_vect": "src/2D/VSF.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.439,
+            "g": 0.346,
+            "b": 0.119,
+            "a": 1.0
+          }
+        },
+        "border_color": "#B19F61",
+        "fill_color": "#CCCCCC",
+        "border_style": "solid",
+        "shape": "octagon",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "SF": {
+      "3d_file": "src/3D/SF.glb",
+      "2d_file_rast": "src/2D/SF.png",
+      "2d_file_vect": "src/2D/SF.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.686,
+            "g": 0.508,
+            "b": 0.029,
+            "a": 1.0
+          }
+        },
+        "border_color": "#D8BD30",
+        "fill_color": "#CCCCCC",
+        "border_style": "solid",
+        "shape": "octagon",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "RSF": {
+      "3d_file": "src/3D/RSF.glb",
+      "2d_file_rast": "src/2D/RSF.png",
+      "_comment": "Reused Special Find (RSF / spolia): a physical object observed in situ but originally produced for a different context. Octagon (sibling of SF/VSF) with the EM red border (#9B3333). Originating DP: DP-26.",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.328,
+            "g": 0.033,
+            "b": 0.033,
+            "a": 1.0
+          }
+        },
+        "border_color": "#9B3333",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "octagon",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "USD": {
+      "3d_file": "src/3D/USD.glb",
+      "2d_file_rast": "src/2D/USD.png",
+      "2d_file_vect": "src/2D/USD.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.687,
+            "g": 0.127,
+            "b": 0.0,
+            "a": 1.0
+          }
+        },
+        "border_color": "#D86400",
+        "fill_color": "#F5F5F5",
+        "border_style": "solid",
+        "shape": "rounded_rectangle",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "serSU": {
+      "3d_file": "src/3D/serSU.glb",
+      "2d_file_rast": "src/2D/serSU.png",
+      "2d_file_vect": "src/2D/serSU.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.328,
+            "g": 0.033,
+            "b": 0.033,
+            "a": 1.0
+          }
+        },
+        "border_color": "#9B3333",
+        "fill_color": "#EFEFEF",
+        "border_style": "solid",
+        "shape": "ellipse",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "serUSD": {
+      "3d_file": "src/3D/serUSD.glb",
+      "2d_file_rast": "src/2D/serUSD.png",
+      "2d_file_vect": "src/2D/serUSD.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.687,
+            "g": 0.127,
+            "b": 0.0,
+            "a": 1.0
+          }
+        },
+        "border_color": "#D86400",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "ellipse",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "serUSVn": {
+      "3d_file": "src/3D/serUSV.glb",
+      "2d_file_rast": "src/2D/serUSV.png",
+      "2d_file_vect": "src/2D/serUSV.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.031,
+            "g": 0.191,
+            "b": 0.026,
+            "a": 1.0
+          }
+        },
+        "border_color": "#31792D",
+        "fill_color": "#000000",
+        "border_style": "solid",
+        "shape": "ellipse",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "serUSVs": {
+      "file_3d": "src/3D/serUSVs.glb",
+      "2d_file_rast": "src/2D/serUSVs.png",
+      "2d_file_vect": "src/2D/serUSV.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.018,
+            "g": 0.275,
+            "b": 0.799,
+            "a": 1.0
+          }
+        },
+        "border_color": "#248FE7",
+        "fill_color": "#000000",
+        "border_style": "solid",
+        "shape": "ellipse",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "TSU": {
+      "3d_file": "src/3D/TSU.glb",
+      "2d_file_rast": "src/2D/TSU.png",
+      "2d_file_vect": "src/2D/TSU.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.328,
+            "g": 0.033,
+            "b": 0.033,
+            "a": 1.0
+          }
+        },
+        "border_color": "#9B3333",
+        "fill_color": "#DDDDDD",
+        "border_style": "dotted",
+        "shape": "rectangle",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "BR": {
+      "3d_file": "src/3D/BR.glb",
+      "2d_file_rast": "src/2D/continuity.png",
+      "2d_file_vect": "src/2D/continuity.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.0,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 1.0
+          }
+        },
+        "border_color": "#000000",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "diamond",
+        "border_width": 4
+      },
+      "label_position": "center"
+    },
+    "SE": {
+      "_comment": "Stratigraphic Event: l'ATTO che crea, modifica o distrugge un'unita — un terremoto che fa cadere l'intonaco, una demolizione, l'inizio di un cantiere. Non e materia, e un processo, e per questo non appartiene a nessuna delle famiglie cromatiche della materia (rosso reale, verde/blu virtuale, arancio documentario, giallo special find, grigio negativo). Prende il TEAL della famiglia attivita: un ActivityNodeGroup e un fascio di atti e porta gia la linguetta ciano #CCFFFF, quindi il ciano e l'unico colore del linguaggio che dice gia 'e successo qualcosa' invece di 'qualcosa c'e'. Curato in S10 (2026-08-02): fino ad allora SE portava il segnaposto #BC0000 mai scelto, che per giunta contraddiceva il proprio bordo nero, e il node datamodel dichiarava il simbolo 'to be defined'. Il nero di BR e stato scartato di proposito: un material nero rende un proxy illeggibile in viewport, e i proxy SE si vedono (Heriverse li disegna fra i suoi stratigraphicTypes).",
+      "3d_file": "src/3D/SE.glb",
+      "2d_file_rast": "src/3D/SE.png",
+      "2d_file_vect": "src/3D/SE.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.023,
+            "g": 0.262,
+            "b": 0.262,
+            "a": 1.0
+          }
+        },
+        "border_color": "#2A8C8C",
+        "fill_color": "#FFFFFF",
+        "border_style": "dashed",
+        "shape": "triangle",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "PROP": {
+      "3d_file": "src/3D/property.glb",
+      "2d_file_rast": "src/2D/property.png",
+      "2d_file_vect": "src/2D/property.svg",
+      "style": {
+        "border_color": "#000000",
+        "fill_color": "#FFFFFF",
+        "border_style": "dashed",
+        "shape": "circle"
+      },
+      "label_position": "over"
+    },
+    "COMB": {
+      "3d_file": "src/3D/combiner.glb",
+      "2d_file_rast": "src/2D/combiner.png",
+      "2d_file_vect": "src/2D/combiner.svg",
+      "style": {
+        "border_color": "#FFCC00",
+        "fill_color": "#FFFFFF",
+        "border_style": "dashed",
+        "shape": "hexagon"
+      },
+      "label_position": "top_left"
+    },
+    "EXT": {
+      "3d_file": "src/3D/extractor.glb",
+      "2d_file_rast": "src/2D/extractor.png",
+      "2d_file_vect": "src/2D/extractor.svg",
+      "style": {
+        "border_color": "#0033CC",
+        "fill_color": "#F0F0F0",
+        "border_style": "solid",
+        "shape": "pentagon"
+      },
+      "label_position": "top_left"
+    },
+    "DOC": {
+      "3d_file": "src/3D/document.glb",
+      "2d_file_rast": "src/2D/document.png",
+      "2d_file_vect": "src/2D/document.svg",
+      "style": {
+        "border_color": "#000000",
+        "fill_color": "#E0E0E0",
+        "border_style": "solid",
+        "shape": "ellipse"
+      },
+      "label_position": "over"
+    },
+    "EP": {
+      "3d_file": "src/3D/epoch.glb",
+      "2d_file_rast": "src/2D/epoch.png",
+      "2d_file_vect": "src/2D/epoch.svg",
+      "style": {
+        "border_color": "#009933",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "rectangle"
+      },
+      "label_position": "over"
+    },
+    "AUTH": {
+      "file_3d": "src/3D/author.glb",
+      "2d_file_rast": "src/2D/author.png",
+      "2d_file_vect": "src/2D/author.svg",
+      "style": {
+        "border_color": "#FF6600",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "star"
+      },
+      "label_position": "over"
+    },
+    "AUTH_AI": {
+      "_comment": "AI-assisted author. Same star shape as AUTH for visual family unity, but cyan/blue tones to distinguish at a glance from human author (red/orange). The graphml palette identifies it via the 'AI.' label prefix (em_palette_icons).",
+      "file_3d": "src/3D/author_ai.glb",
+      "2d_file_rast": "src/2D/author_ai.png",
+      "2d_file_vect": "src/2D/author_ai.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.0,
+            "g": 0.5,
+            "b": 0.8,
+            "a": 1.0
+          }
+        },
+        "border_color": "#00AAFF",
+        "fill_color": "#E0F4FF",
+        "border_style": "solid",
+        "shape": "star"
+      },
+      "label_position": "over"
+    },
+    "LIC": {
+      "_comment": "License node. Shield shape carrying a gold border to read clearly as a rights / legal artifact. Connected via has_license to any Node or to the GraphNode for graph-wide licensing. Graphml palette prefix: 'LI.'.",
+      "file_3d": "src/3D/license.glb",
+      "2d_file_rast": "src/2D/license.png",
+      "2d_file_vect": "src/2D/license.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.8,
+            "g": 0.6,
+            "b": 0.0,
+            "a": 1.0
+          }
+        },
+        "border_color": "#FFD700",
+        "fill_color": "#FFF8DC",
+        "border_style": "solid",
+        "shape": "shield"
+      },
+      "label_position": "over"
+    },
+    "EMB": {
+      "_comment": "Embargo node. Octagon with red dashed border to read as a temporal restriction (the dashed border encodes 'temporary'). Connected via has_embargo to a Node, LicenseNode or GraphNode. Graphml palette prefix: 'EB.'.",
+      "file_3d": "src/3D/embargo.glb",
+      "2d_file_rast": "src/2D/embargo.png",
+      "2d_file_vect": "src/2D/embargo.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.8,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 1.0
+          }
+        },
+        "border_color": "#CC0000",
+        "fill_color": "#FFEEEE",
+        "border_style": "dashed",
+        "shape": "octagon"
+      },
+      "label_position": "over"
+    },
+    "GRAPH": {
+      "_comment": "Top-level container node representing the EM graph itself. Anchor for graph-wide metadata propagation (default author, license, embargo, epoch). Rendered as a dashed rounded rectangle to read as a meta-container, neutral gray to stay visually distinct from stratigraphic and paradata nodes. Graphml palette prefix: 'G.'.",
+      "file_3d": "src/3D/graph.glb",
+      "2d_file_rast": "src/2D/graph.png",
+      "2d_file_vect": "src/2D/graph.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.3,
+            "g": 0.3,
+            "b": 0.3,
+            "a": 1.0
+          }
+        },
+        "border_color": "#333333",
+        "fill_color": "#EEEEEE",
+        "border_style": "dashed",
+        "shape": "rounded_rectangle"
+      },
+      "label_position": "over"
+    },
+    "NARR": {
+      "_comment": "EM Narrative (DP-79). A NarrativeNode is a crm:E33 Linguistic Object over the graph — chapters of prose and embeds — not an assertion about the site, which is why it stays neutral grey and must not read as stratigraphy or paradata. Solid border, unlike GRAPH's dashed: a narrative is a real authored object, not an anchor for metadata propagation. The .svg does not exist yet; the renderer takes the raster (see step I).",
+      "file_3d": "src/3D/narrative.glb",
+      "2d_file_rast": "src/2D/narrative.png",
+      "2d_file_vect": "src/2D/narrative.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.35,
+            "g": 0.35,
+            "b": 0.4,
+            "a": 1.0
+          }
+        },
+        "border_color": "#5A5A66",
+        "fill_color": "#F2F2F5",
+        "border_style": "solid",
+        "shape": "rounded_rectangle"
+      },
+      "label_position": "over"
+    },
+    "LINK": {
+      "file_3d": "src/3D/link.glb",
+      "2d_file_rast": "src/2D/link.png",
+      "2d_file_vect": "src/2D/link.svg",
+      "style": {
+        "border_color": "#FF6600",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "chain"
+      },
+      "label_position": "over"
+    },
+    "GEO": {
+      "file_3d": "src/3D/geo.glb",
+      "2d_file_rast": "src/2D/geo.png",
+      "2d_file_vect": "src/2D/geo.svg",
+      "style": {
+        "border_color": "#FF6600",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "globe"
+      },
+      "label_position": "over"
+    },
+    "RM": {
+      "file_3d": "src/3D/rm.glb",
+      "2d_file_rast": "src/2D/rm.png",
+      "2d_file_vect": "src/2D/rm.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.5,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 1.0
+          }
+        },
+        "border_color": "#FF6600",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "model"
+      },
+      "label_position": "over"
+    },
+    "RMDoc": {
+      "file_3d": "src/3D/rmdoc.glb",
+      "2d_file_rast": "src/2D/rmdoc.png",
+      "2d_file_vect": "src/2D/rmdoc.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.5,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 1.0
+          }
+        },
+        "border_color": "#FF6600",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "model"
+      },
+      "label_position": "over"
+    },
+    "RMSF": {
+      "file_3d": "src/3D/rmsf.glb",
+      "2d_file_rast": "src/2D/rmsf.png",
+      "2d_file_vect": "src/2D/rmsf.svg",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.5,
+            "g": 0.0,
+            "b": 0.0,
+            "a": 1.0
+          }
+        },
+        "border_color": "#FF6600",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "model"
+      },
+      "label_position": "over"
+    },
+    "SS": {
+      "file_3d": "src/3D/ss.glb",
+      "2d_file_rast": "src/2D/ss.png",
+      "2d_file_vect": "src/2D/ss.svg",
+      "style": {
+        "border_color": "#FF6600",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "model"
+      },
+      "label_position": "over"
+    },
+    "unknown": {
+      "file_3d": "src/3D/unknown.glb",
+      "file_2d": "src/2D/unknown.png",
+      "style": {
+        "border_color": "#FF0000",
+        "fill_color": "#FFFFFF",
+        "border_style": "dotted",
+        "shape": "question_mark"
+      },
+      "label_position": "center"
+    },
+    "UL": {
+      "_comment": "Working Unit (E25 Human-Made Feature): le tracce di lavorazione della pietra su una superficie architettonica — subbia, gradina, iccozza, colpi di mazzuolo. UL e la TRACCIA, non l'atto che l'ha prodotta (quello e una E12 Production a parte, via P108i). Il 2D segue il simbolo dichiarato nel node datamodel — rettangolo bianco con bordo arancio — e resta distinguibile sia dalla US (stesso rettangolo, bordo rosso) sia dalla USD (stesso arancio, ma rounded_rectangle). Il material 3D e invece il ROSSO della US (decisione E.D. 2026-08-02: le UL restano rosse per ora); le sotto-colorazioni per tipologia di lavorazione sono un follow-up.",
+      "file_3d": "src/3D/US.glb",
+      "file_2d": "src/2D/US.png",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.328,
+            "g": 0.033,
+            "b": 0.033,
+            "a": 1.0
+          }
+        },
+        "border_color": "#D86400",
+        "fill_color": "#FFFFFF",
+        "border_style": "solid",
+        "shape": "rectangle",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "USN": {
+      "file_3d": "src/3D/US.glb",
+      "file_2d": "src/2D/US.png",
+      "style": {
+        "material": {
+          "rgba_color": {
+            "r": 0.55,
+            "g": 0.55,
+            "b": 0.55,
+            "a": 1.0
+          }
+        },
+        "border_color": "#C4C4C4",
+        "fill_color": "#F0F0F0",
+        "border_style": "dashed",
+        "shape": "rectangle",
+        "border_width": 4
+      },
+      "label_position": "over"
+    },
+    "ActivityNodeGroup": {
+      "_comment": "yEd group-folder rendering for an activity (logical grouping of stratigraphic actions). Canonical EM palette (point of truth = templates/em_palette_template.graphml, node 'Att.[xx]'): neutral grey container, dashed black border, distinguished by the CYAN group title-tab (label_background). Supersedes the legacy 'ANG' purple-ellipse style for group-container rendering; ANG kept for back-compat with other consumers.",
+      "style": {
+        "shape": "roundrectangle",
+        "fill_color": "#F5F5F5",
+        "border_color": "#000000",
+        "border_style": "dashed",
+        "border_width": 1.0,
+        "label_background": "#CCFFFF",
+        "label_position": "top"
+      }
+    },
+    "ParadataNodeGroup": {
+      "_comment": "yEd group-folder rendering for a paradata node group (holds all paradata of a stratigraphic unit). Canonical EM palette (point of truth = em_palette_template.graphml, node 'US[xxx]_PD'): neutral grey container, dashed black border, distinguished by the PEACH group title-tab (label_background). Supersedes routing through the shared 'GRAPH' grey style; GRAPH kept for the graph-metadata container.",
+      "style": {
+        "shape": "roundrectangle",
+        "fill_color": "#F5F5F5",
+        "border_color": "#000000",
+        "border_style": "dashed",
+        "border_width": 1.0,
+        "label_background": "#FFCC99",
+        "label_position": "top"
+      }
+    },
+    "TimeBranchNodeGroup": {
+      "_comment": "yEd group-folder rendering for a time branch (alternative reconstructive hypotheses; two TB can be linked by contrasts_with). Canonical EM palette (point of truth = em_palette_template.graphml, node 'TB.0'): neutral grey container, dashed black border, distinguished by the GREEN group title-tab (label_background). Distinct from ParadataNodeGroup, which the legacy shared 'GRAPH' alias could not express.",
+      "style": {
+        "shape": "roundrectangle",
+        "fill_color": "#F5F5F5",
+        "border_color": "#000000",
+        "border_style": "dashed",
+        "border_width": 1.0,
+        "label_background": "#99CC00",
+        "label_position": "top"
+      }
+    },
+    "LocationNodeGroup": {
+      "_comment": "yEd group-folder rendering for spatial / locational membership. Dashed round-rectangle to read clearly as a *group container* and to stay distinct from the solid-rectangle stratigraphic units. Border colour varies by 'kind' (toponym / study / functional). When several is_in_location memberships exist on the same node, only the one with is_primary=true is drawn as a folder; the others are emitted as labels/badges (yEd cannot stack overlapping group folders). See em_data and the Location concept page in the manual.",
+      "style": {
+        "shape": "roundrectangle",
+        "fill_color": "#F5F5F5",
+        "border_color": "#000000",
+        "border_style": "dashed",
+        "border_width": 1.0,
+        "label_background": "#EBEBEB",
+        "label_position": "top"
+      },
+      "kind_modifiers": {
+        "_comment": "Border colour overrides keyed on the LocationNodeGroup.kind enum value.",
+        "toponym": {
+          "border_color": "#888888",
+          "description": "External / administrative identity (Pompei, Lazio, Italia)."
+        },
+        "study": {
+          "border_color": "#3A5A8C",
+          "description": "Operational / procedural identity (saggio, settore, quadrato, sondage)."
+        },
+        "functional": {
+          "border_color": "#000000",
+          "description": "Interpretive / semantic identity (basilica, room A, courtyard)."
+        }
+      }
+    }
+  },
+  "document_roles": {
+    "_comment": "Axis 1 of the three-axis Master-Document classification (EM 1.6). Declares how this document participates in the reconstructive reasoning. 'analytical' = primary source for direct reasoning about this context. 'comparative' = external comparison material (other sites, epochs, typologies). Not visualized as colour — metadata only.",
+    "analytical": {
+      "description": "Primary source for direct reconstructive reasoning about this context."
+    },
+    "comparative": {
+      "description": "External document used as comparative reference (other sites, other epochs, typologies)."
+    }
+  },
+  "document_content_natures": {
+    "_comment": "Axis 2 of the three-axis Master-Document classification (EM 1.6). Describes the intrinsic nature of the document's content. '2d_object' = image, drawing, photograph, text. '3d_object' = three-dimensional model. Not visualized as colour — metadata only.",
+    "2d_object": {
+      "description": "Image, drawing, photograph, or textual document."
+    },
+    "3d_object": {
+      "description": "Three-dimensional model (mesh, laser scan, photogrammetric reconstruction)."
+    }
+  },
+  "document_variant_styles": {
+    "_comment": "Axis 3 of the three-axis Canonical-Document classification (EM 1.6). Declares how the document's Representation Model (RM) is spatialized in the 3D scene. Q-C (EM 1.6): the axis is a scale of METRIC AUTHORITY OF PLACEMENT, and it is authoritative on the **RMDoc** — the spatial instance — not on the Document. The Document's existence is certain; what has degrees is its spatialisation, which is what the RMDoc IS (proxy:US :: RMSF:SF :: RM:state :: RMDoc:Document). The position itself (X,Y,Z + rotation) lives on the RMDoc and nowhere else; the Document may mirror the value on its yEd border for diagram convenience, but it carries no position. The ladder, from most to least metric authority: reality_based \u2192 observable \u2192 asserted \u2192 symbolic. `em_based` is not a rung of that ladder but a provenance statement (the asset IS an EM-derived reconstruction). Temporality is a separate matter: it is an attribution, certain or argued through a paradata chain, never a grade on this axis. The 'geometry' property drives both the GraphML DocumentNode border colour (in yEd) and the RM contour colour in the 3D viewport (per the v1.6 toggle). Documents without an RM (e.g. PDF articles, bibliographies) omit the geometry property entirely — no node, no colour. Border WIDTH carries the canonical/instance distinction: width >= 3.0 is the canonical document, anything thinner is a use-instance. The COLOUR classifies the canonical document's geometry-axis category. A black thick border means 'canonical without geometry classification' (canonical_unknown). Renamed from 'master' in schema 2: every digital document is a copy, so 'master' misread as 'original vs copies'; what the flag marks is the document drawn at its own creation, vs the instances that re-use it. Kept in sync with the reference nodes in templates/em_palette_template.graphml.",
+    "default": {
+      "border_color": "#000000",
+      "border_style": "solid",
+      "border_width": 1.0,
+      "_comment": "Use-instance / non-canonical document. Thin black border. Used for DocumentNodes without a canonical role (citation references, paradata pointers, etc.)."
+    },
+    "canonical_unknown": {
+      "border_color": "#000000",
+      "border_style": "solid",
+      "border_width": 4.0,
+      "description": "Master document whose RM spatialisation has not been classified yet on the geometry axis. Thick black border distinguishes it from a non-Master Instance (thin black) while remaining neutral on classification."
+    },
+    "reality_based": {
+      "border_color": "#9B3333",
+      "border_style": "solid",
+      "border_width": 4.0,
+      "description": "Robust sensor / algorithmic positioning: photogrammetric model, photo from a calibrated photogrammetric sequence, instrumentally-surveyed special find."
+    },
+    "observable": {
+      "border_color": "#D86400",
+      "border_style": "solid",
+      "border_width": 4.0,
+      "description": "Position reconstructed with approximation from rigorous archaeological documentation (plans, sections, measured drawings). Criterion-based, residual uncertainty remains."
+    },
+    "asserted": {
+      "border_color": "#D8BD30",
+      "border_style": "solid",
+      "border_width": 4.0,
+      "description": "Compositional positioning asserted by the operator, without claim of restitution (e.g. placing a comparative element in the scene for analytical purposes)."
+    },
+    "symbolic": {
+      "border_color": "#8C8C8C",
+      "border_style": "solid",
+      "border_width": 4.0,
+      "description": "Lowest rung of the metric-authority ladder (Q-C, EM 1.6): the base is NOT metric at all — a not-to-scale map, a schematic plan, a sketch. The spatialisation places the asset where it is useful to look at, and claims no measurable correspondence with the ground. Distinct from 'asserted', where the operator asserts a position but the base itself could have carried a metric. Neutral grey because there is no metric claim to grade; distinct from the BLACK of canonical_unknown, which means 'not classified yet' rather than 'classified as non-metric'."
+    },
+    "em_based": {
+      "border_color": "#4A7FB8",
+      "border_style": "solid",
+      "border_width": 4.0,
+      "description": "3D reconstruction produced via the Extended Matrix methodology — the document itself IS an EM-derived reconstruction. Typical case: a hypothesis model built from another EM graph, used here as a comparative or derivative source."
+    }
+  },
+  "dtc_kinds": {
+    "_comment": "DATA-DRIVEN, EXPANDABLE per-kind vocabulary for the DTC substrate profile (ECHOES). Mirrors the Master-Document axis vocabularies above (document_roles/content_natures): the three base kinds (input/process/output) each list specific kinds seeded from the 2017 DTC palette. Adding a new kind (e.g. audio, spectroscopy) is a JSON entry here (+ a glyph) — NOT a code change; the DTC node classes validate against these keys via s3dgraphy.utils.get_dtc_kinds(). `glyph` names the 2017 DTC SVG (wired in the later glyph/visual-manager slice; recorded here as data only).",
+    "input": {
+      "photo": { "label": "Photograph", "glyph": "09_photos", "description": "Photographic acquisition (single image or set)." },
+      "laserscanner": { "label": "Laser scan", "glyph": "10_laserscanner", "description": "Terrestrial/close-range laser scanning acquisition." },
+      "topographic": { "label": "Topographic survey", "glyph": "01_topographicnetwork", "description": "Total-station / topographic-network acquisition." }
+    },
+    "process": {
+      "transformation": { "label": "Transformation", "glyph": "00_transformation", "description": "A processing/transformation step turning inputs into produced digital objects." }
+    },
+    "acquisition": {
+      "download": { "label": "Download", "glyph": null, "description": "Retrieval of a digital object from a remote (opaque, Tier-0) repository." },
+      "ingest": { "label": "Ingest", "glyph": null, "description": "Generic ingestion of a digital object into the study." },
+      "local_import": { "label": "Local import", "glyph": null, "description": "Acquisition from the local file system (project-folder search) — the local analog of remote acquisition." }
+    },
+    "output": {
+      "pointcloud": { "label": "Point cloud", "glyph": "02_pointcloud", "description": "Produced point cloud." },
+      "mesh": { "label": "Mesh", "glyph": "03_mesh", "description": "Produced 3D mesh model." },
+      "dem": { "label": "DEM", "glyph": "07_DEM", "description": "Digital Elevation Model." },
+      "orthophoto": { "label": "Orthophoto", "glyph": "08_ortophoto", "description": "Produced orthophoto / orthomosaic." },
+      "points": { "label": "Points", "glyph": "04_points", "description": "Vector point features." },
+      "lines": { "label": "Lines", "glyph": "05_lines", "description": "Vector line features." },
+      "polygons": { "label": "Polygons", "glyph": "06_polygons", "description": "Vector polygon features." }
+    }
+  },
+  "edge_style": {
+    "is_before": {
+      "style": {
+        "color": "#FF0000",
+        "line_style": "solid",
+        "width": 2
+      },
+      "label": "Is Before"
+    },
+    "has_same_time": {
+      "style": {
+        "color": "#00FF00",
+        "line_style": "solid",
+        "width": 2
+      },
+      "label": "Contemporaneous Elements"
+    },
+    "changed_from": {
+      "style": {
+        "color": "#0000FF",
+        "line_style": "dotted",
+        "width": 2
+      },
+      "label": "Temporal Transformation"
+    },
+    "has_data_provenance": {
+      "style": {
+        "color": "#FFA500",
+        "line_style": "dashed",
+        "width": 1.5
+      },
+      "label": "Data Provenance"
+    },
+    "contrasts_with": {
+      "style": {
+        "color": "#800080",
+        "line_style": "dashed-dotted",
+        "width": 1.5
+      },
+      "label": "Contrasting Properties"
+    },
+    "has_first_epoch": {
+      "style": {
+        "color": "#008000",
+        "line_style": "solid",
+        "width": 2
+      },
+      "label": "Has First Epoch"
+    },
+    "survive_in_epoch": {
+      "style": {
+        "color": "#FF69B4",
+        "line_style": "dotted",
+        "width": 1.5
+      },
+      "label": "Survives In Epoch"
+    },
+    "is_in_activity": {
+      "style": {
+        "color": "#1E90FF",
+        "line_style": "solid",
+        "width": 2
+      },
+      "label": "Part of Activity"
+    },
+    "is_in_location": {
+      "_comment": "Edge expressing spatial / locational membership of a node into a LocationNodeGroup, or the recursive Location → Location hierarchy. Default style is the non-primary membership rendering. The 'primary_modifier' applies when the edge attribute is_primary=true (in em-graph this membership is also drawn as the yEd group folder).",
+      "style": {
+        "color": "#888888",
+        "line_style": "dotted",
+        "width": 1
+      },
+      "label": "Is in location",
+      "primary_modifier": {
+        "color": "#444444",
+        "line_style": "solid",
+        "width": 2,
+        "description": "Applied when is_primary=true on the edge."
+      }
+    },
+    "has_property": {
+      "style": {
+        "color": "#FFD700",
+        "line_style": "dashed",
+        "width": 1.5
+      },
+      "label": "Has Property"
+    },
+    "extracted_from": {
+      "style": {
+        "color": "#A52A2A",
+        "line_style": "dotted",
+        "width": 1.5
+      },
+      "label": "Extracted From"
+    },
+    "combines": {
+      "style": {
+        "color": "#FF6347",
+        "line_style": "solid",
+        "width": 2
+      },
+      "label": "Combines"
+    },
+    "has_timebranch": {
+      "style": {
+        "color": "#4682B4",
+        "line_style": "solid",
+        "width": 2
+      },
+      "label": "Included in Timebranch"
+    },
+    "generic_connection": {
+      "style": {
+        "color": "#808080",
+        "line_style": "dashed",
+        "width": 1
+      },
+      "label": "Generic Connection"
+    },
+    "has_linked_resource": {
+      "style": {
+        "color": "#9400D3",
+        "line_style": "solid",
+        "width": 1.5
+      },
+      "label": "Has Link"
+    },
+    "has_semantic_shape": {
+      "style": {
+        "color": "#4B0082",
+        "line_style": "dotted",
+        "width": 1.5
+      },
+      "label": "Has Semantic Shape"
+    },
+    "has_representation_model": {
+      "style": {
+        "color": "#8A2BE2",
+        "line_style": "dashed",
+        "width": 1.5
+      },
+      "label": "Has Representation Model"
+    },
+    "is_in_paradata_nodegroup": {
+      "style": {
+        "color": "#FF7F50",
+        "line_style": "solid",
+        "width": 1.5
+      },
+      "label": "Belongs to a Paradata Node Group"
+    },
+    "has_paradata_nodegroup": {
+      "style": {
+        "color": "#FF4500",
+        "line_style": "solid",
+        "width": 1.5
+      },
+      "label": "Is connected to a Paradata Node Group"
+    },
+    "has_author": {
+      "style": {
+        "color": "#DA70D6",
+        "line_style": "dashed",
+        "width": 1.5
+      },
+      "label": "Has Author"
+    },
+    "has_geoposition": {
+      "style": {
+        "color": "#2E8B57",
+        "line_style": "dotted",
+        "width": 1.5
+      },
+      "label": "Has Geoposition"
+    },
+    "is_in_timebranch": {
+      "style": {
+        "color": "#4169E1",
+        "line_style": "solid",
+        "width": 1.5
+      },
+      "label": "Included in Timebranch"
+    }
+  }
 }
