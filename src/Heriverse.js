@@ -900,25 +900,121 @@ Heriverse.isLoadableResourceLocator = (url) => {
 	return !String(url).toLowerCase().startsWith(HERIVERSE_INTERNAL_SCHEME);
 };
 
+// ── NIGHT-RES/R4 · IL CONSUMATORE SCEGLIE PER CAPACITÀ ─────────────────────
+//
+// L'euristica di ieri notte — due passate, «ha il checksum quindi è la
+// pubblicata» — era giusta per caso. Il checksum dice che quei byte sono
+// verificabili, non che siano i byte che questo viewer sa aprire: il giorno
+// che il bake registra un digest anche per una risorsa di lavoro (e lo fa
+// già), quella regola sceglie la cosa sbagliata senza dirlo.
+//
+// La regola nuova è: **il grafo dichiara fatti, il consumatore sceglie per
+// capacità**. Nessun flag per-strumento nel dato — un dato da modificare ogni
+// volta che nasce un software è una configurazione travestita, e costringe a
+// rimettere le mani nei grafi già scritti. La risorsa dice cosa è (formato,
+// `tier`, `packaging`, peso); questo elenco dice cosa Heriverse sa fare.
+Heriverse.CAPABILITIES = {
+	// ATON carica glTF/GLB: è il formato su cui è costruito il viewer
+	gltf: true,
+	// 3D TILES: **no, e non si finge**. In questo ramo non c'è nessun loader
+	// di 3D Tiles né in `src/` né in `vendors/`, e ATON arriva dal deploy
+	// (`/dist/ATON.min.js`), fuori da questo checkout: da qui non si può
+	// verificare. Dichiararlo `true` significherebbe promettere un
+	// caricamento che nessuno ha misurato — e il modo in cui un viewer
+	// diventa "rotto" agli occhi di chi lo usa. Chi sa che ATON li carica
+	// mette `true` qui, in un posto solo.
+	tiles3d: false,
+	// SCOMPATTARE UN ARCHIVIO: no. `JSZip` in questo repo c'è, ma serve
+	// all'EXPORT (`HeriverseImportExport.exportNodesAsZip`): impacchetta per
+	// far scaricare, non spacchetta per caricare. Una distribution
+	// `packaging: "archive"` quindi si salta, e si salta DICENDOLO.
+	unpackArchive: false,
+};
+
+const HERIVERSE_GLTF_EXTENSIONS = [".gltf", ".glb"];
+
+// Il `tier` LETTO, con lo stesso ripiego che fa `ResourceNode.effective_tier`
+// in s3Dgraphy: un locator `blend://` è un master, tutto il resto è una
+// distribution. Scritto qui per intero perché è la regola di lettura che
+// mantiene funzionante un project.json PRE-1.6, dove `tier` non c'è.
+const readTier = (data) => {
+	if (data.tier) return data.tier;
+	return String(data.url || "").startsWith(HERIVERSE_INTERNAL_SCHEME)
+		? "master"
+		: "distribution";
+};
+
+const readPackaging = (data) => {
+	if (data.packaging) return data.packaging;
+	const url = String(data.url || "").toLowerCase();
+	if (url.endsWith(".zip")) return "archive";
+	return url.endsWith("/") ? "directory" : "file";
+};
+
+/**
+ * Questo viewer sa aprire questa risorsa? → `{ok}` oppure `{ok:false, why}`.
+ *
+ * La ragione viaggia col no perché un `false` muto è indistinguibile da una
+ * risorsa che non c'era: sono due situazioni diverse e chi guarda la console
+ * deve poterle separare.
+ */
+Heriverse.canConsumeResource = (data) => {
+	if (!data || data.url_type !== "3d_model") return { ok: false, why: "not a 3d model" };
+	const url = String(data.url || "");
+	if (!url) return { ok: false, why: "no locator" };
+	// i MASTER si ignorano, e non è un errore: esistono di proposito, sono ciò
+	// da cui le distribution vengono fatte, e un `blend://` descrive un
+	// datablock dentro un file Blender che nessun browser può aprire
+	if (readTier(data) === "master") return { ok: false, why: "master" };
+	if (!Heriverse.isLoadableResourceLocator(url))
+		return { ok: false, why: "internal locator" };
+
+	const packaging = readPackaging(data);
+	if (packaging === "archive" && !Heriverse.CAPABILITIES.unpackArchive)
+		return { ok: false, why: "packaged as an archive and this viewer cannot unpack one" };
+
+	const lower = url.toLowerCase().split("?")[0];
+	if (HERIVERSE_GLTF_EXTENSIONS.some((ext) => lower.endsWith(ext)))
+		return Heriverse.CAPABILITIES.gltf
+			? { ok: true }
+			: { ok: false, why: "glTF not supported here" };
+	if (lower.endsWith("tileset.json"))
+		return Heriverse.CAPABILITIES.tiles3d
+			? { ok: true }
+			: { ok: false, why: "3D Tiles not supported in this build" };
+	// un'estensione che non conosciamo NON si rifiuta: un url senza estensione
+	// è un endpoint che serve i byte giusti, e rifiutarlo renderebbe questa
+	// funzione un elenco chiuso di nomi di file — cioè la cosa che il
+	// principio «si sceglie per capacità» esiste per evitare
+	return { ok: true };
+};
+
 Heriverse.getLinkFromRepresentationModel = (node) => {
 	let links = node.getNeighborsByRelation(
 		HeriverseNode.RELATIONS.HAS_LINKED_RESOURCE,
 		HeriverseNode.DIRECTIONS.TO
 	);
-	// due passate e non una: prima si cerca una risorsa con un checksum — è
-	// la PUBBLICATA, l'unica di cui si sa anche *cosa* si dovrebbe trovare —
-	// e solo se non c'è ci si accontenta di una derivata qualunque. Un solo
-	// ciclo con l'`if` composto darebbe la prima che capita, che è il difetto
-	// che questo commento esiste per non far tornare.
-	let ripiego = "";
+	// UNA passata sola, e una scelta fra le candidate: si raccoglie ciò che
+	// questo viewer sa aprire, poi si preferisce — nell'ordine — chi porta il
+	// `preferred` (un SUGGERIMENTO di chi conosce lo studio, mai un cancello:
+	// se non c'è, la scelta resta valida), poi chi porta un checksum (di quei
+	// byte si sa anche *cosa* ci si deve trovare), poi la prima arrivata.
+	let candidate = [];
 	for (let link_id in links) {
 		let link = links[link_id];
-		if (!link.data || link.data.url_type !== "3d_model") continue;
-		if (!Heriverse.isLoadableResourceLocator(link.data.url)) continue;
-		if (link.data.checksum) return link.data.url;
-		if (!ripiego) ripiego = link.data.url;
+		if (!link.data) continue;
+		const verdict = Heriverse.canConsumeResource(link.data);
+		if (verdict.ok) candidate.push(link.data);
+		else if (verdict.why !== "master" && verdict.why !== "not a 3d model")
+			// un master saltato è normale e non merita una riga; il resto sì:
+			// «non l'ho caricato» e «non c'era» devono essere distinguibili
+			console.log(`[Heriverse] skipped ${link.data.url}: ${verdict.why}`);
 	}
-	return ripiego;
+	if (!candidate.length) return "";
+	const preferita = candidate.find((d) => d.preferred);
+	if (preferita) return preferita.url;
+	const conChecksum = candidate.find((d) => d.checksum);
+	return (conChecksum || candidate[0]).url;
 };
 
 function getConvexShapePoints(shape) {
