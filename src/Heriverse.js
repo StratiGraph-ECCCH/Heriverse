@@ -913,22 +913,63 @@ Heriverse.isLoadableResourceLocator = (url) => {
 // volta che nasce un software è una configurazione travestita, e costringe a
 // rimettere le mani nei grafi già scritti. La risorsa dice cosa è (formato,
 // `tier`, `packaging`, peso); questo elenco dice cosa Heriverse sa fare.
+// ── NIGHT-FIN/T3 · TRE STATI, PERCHÉ «NON SO» NON È «NO» ───────────────────
+//
+// `tiles3d` era dichiarato `false` con, nella riga accanto, la ragione vera:
+// «ATON arriva dal deploy e da qui non si può verificare». Cioè la verità non
+// era *falso*, era **sconosciuto** — e scrivere falso dove non si è potuto
+// misurare è una bugia piccola della stessa famiglia di quella evitata sul
+// packaging, che pure era stata rifiutata per questo motivo esatto.
+//
+// I tre stati si comportano allo stesso modo nella SCELTA — né `no` né
+// `unknown` fanno prendere una risorsa — e diversamente nel MESSAGGIO, che è
+// l'unica cosa che li distingue e l'unica che serve: «non so caricare 3D
+// Tiles» manda a cercare un loader, «non ho potuto verificare se ATON li
+// carica» manda a guardare ATON. Due strade diverse per chi legge.
+Heriverse.CAPABILITY = { YES: "yes", NO: "no", UNKNOWN: "unknown" };
+
+//: Dove andare a guardare, quando la risposta è «non so». Il nome del posto
+//: viaggia col non-so: un «non verificabile» senza un indirizzo è un vicolo
+//: cieco, e chi lo legge non può fare niente di diverso da chi legge «no».
+Heriverse.CAPABILITY_SOURCES = {
+	tiles3d: "ATON (/dist/ATON.min.js, fuori da questo checkout)",
+};
+
 Heriverse.CAPABILITIES = {
-	// ATON carica glTF/GLB: è il formato su cui è costruito il viewer
-	gltf: true,
-	// 3D TILES: **no, e non si finge**. In questo ramo non c'è nessun loader
-	// di 3D Tiles né in `src/` né in `vendors/`, e ATON arriva dal deploy
-	// (`/dist/ATON.min.js`), fuori da questo checkout: da qui non si può
-	// verificare. Dichiararlo `true` significherebbe promettere un
-	// caricamento che nessuno ha misurato — e il modo in cui un viewer
-	// diventa "rotto" agli occhi di chi lo usa. Chi sa che ATON li carica
-	// mette `true` qui, in un posto solo.
-	tiles3d: false,
-	// SCOMPATTARE UN ARCHIVIO: no. `JSZip` in questo repo c'è, ma serve
-	// all'EXPORT (`HeriverseImportExport.exportNodesAsZip`): impacchetta per
-	// far scaricare, non spacchetta per caricare. Una distribution
-	// `packaging: "archive"` quindi si salta, e si salta DICENDOLO.
-	unpackArchive: false,
+	// ATON carica glTF/GLB: è il formato su cui è costruito il viewer, e
+	// questo si vede da qui — `ATON.createSceneNode().load()` è la riga che
+	// carica ogni modello di questo viewer.
+	gltf: Heriverse.CAPABILITY.YES,
+	// 3D TILES: **non lo so.** In questo ramo non c'è nessun loader né in
+	// `src/` né in `vendors/`, ma il caricamento vero lo fa ATON, che arriva
+	// dal deploy: da qui non è verificabile. Chi apre ATON e trova il loader
+	// mette YES; chi apre ATON e non lo trova mette NO. In un posto solo.
+	tiles3d: Heriverse.CAPABILITY.UNKNOWN,
+	// SCOMPATTARE UN ARCHIVIO: **no, e questo sì che si vede da qui.**
+	// `JSZip` in questo repo c'è, ma serve all'EXPORT
+	// (`HeriverseImportExport.exportNodesAsZip`): impacchetta per far
+	// scaricare, non spacchetta per caricare. Nessuna riga di questo repo
+	// apre un archivio in ingresso, e quello è un fatto locale.
+	unpackArchive: Heriverse.CAPABILITY.NO,
+};
+
+/** `yes` / `no` / `unknown`, accettando anche i booleani di prima: un ramo che
+ *  non è stato aggiornato non deve smettere di funzionare per la forma di un
+ *  valore. `true`/`false` continuano a valere YES/NO. */
+Heriverse.capabilityState = (nome) => {
+	const valore = Heriverse.CAPABILITIES[nome];
+	if (valore === true) return Heriverse.CAPABILITY.YES;
+	if (valore === false) return Heriverse.CAPABILITY.NO;
+	return valore || Heriverse.CAPABILITY.UNKNOWN;
+};
+
+/** La frase che accompagna un rifiuto, e che cambia con lo stato. */
+const whyNotCapable = (nome, cosa) => {
+	const stato = Heriverse.capabilityState(nome);
+	if (stato === Heriverse.CAPABILITY.NO) return `this viewer cannot load ${cosa}`;
+	const dove = Heriverse.CAPABILITY_SOURCES[nome];
+	return `cannot tell whether ${cosa} can be loaded here — not verifiable from `
+		+ `this repository, look at ${dove || "the runtime"}`;
 };
 
 const HERIVERSE_GLTF_EXTENSIONS = [".gltf", ".glb"];
@@ -969,19 +1010,27 @@ Heriverse.canConsumeResource = (data) => {
 	if (!Heriverse.isLoadableResourceLocator(url))
 		return { ok: false, why: "internal locator" };
 
+	const YES = Heriverse.CAPABILITY.YES;
 	const packaging = readPackaging(data);
-	if (packaging === "archive" && !Heriverse.CAPABILITIES.unpackArchive)
-		return { ok: false, why: "packaged as an archive and this viewer cannot unpack one" };
+	if (packaging === "archive" && Heriverse.capabilityState("unpackArchive") !== YES)
+		return { ok: false, why: whyNotCapable("unpackArchive", "an archive"),
+		         capability: "unpackArchive",
+		         state: Heriverse.capabilityState("unpackArchive") };
 
 	const lower = url.toLowerCase().split("?")[0];
 	if (HERIVERSE_GLTF_EXTENSIONS.some((ext) => lower.endsWith(ext)))
-		return Heriverse.CAPABILITIES.gltf
+		return Heriverse.capabilityState("gltf") === YES
 			? { ok: true }
-			: { ok: false, why: "glTF not supported here" };
+			: { ok: false, why: whyNotCapable("gltf", "glTF"),
+			    capability: "gltf", state: Heriverse.capabilityState("gltf") };
 	if (lower.endsWith("tileset.json"))
-		return Heriverse.CAPABILITIES.tiles3d
+		// UNKNOWN si comporta come NO nella scelta — non si prende una
+		// risorsa sperando che vada — ma lo dice diversamente, e dice dove
+		// andare a guardare.
+		return Heriverse.capabilityState("tiles3d") === YES
 			? { ok: true }
-			: { ok: false, why: "3D Tiles not supported in this build" };
+			: { ok: false, why: whyNotCapable("tiles3d", "3D Tiles"),
+			    capability: "tiles3d", state: Heriverse.capabilityState("tiles3d") };
 	// un'estensione che non conosciamo NON si rifiuta: un url senza estensione
 	// è un endpoint che serve i byte giusti, e rifiutarlo renderebbe questa
 	// funzione un elenco chiuso di nomi di file — cioè la cosa che il
