@@ -868,18 +868,57 @@ Heriverse.createRepresentationModelNodes = () => {
 	}
 };
 
+// NIGHT-RIM3/D · s3Dgraphy 1.6: un RM ha PIÙ risorse, e a Heriverse ne
+// interessa una sola.
+//
+// Fino alla 1.5 un RM aveva un solo `has_linked_resource`, quindi «prendi il
+// primo con url_type 3d_model» era corretto. Dalla 1.6 i livelli sono tre
+// (decisione di E.D., 12-09-2026):
+//
+//   * il GREZZO — un locator `blend://<file>.blend#Object/<nome>`: il
+//     datablock dentro un file Blender. Insostituibile, e **illeggibile per
+//     un browser**;
+//   * la DERIVATA — il glTF/GLB ottimizzato prodotto dal bake;
+//   * la PUBBLICATA — la derivata quando il suo locator è un URI
+//     raggiungibile e porta checksum.
+//
+// Tutte e tre portano `url_type: "3d_model"`, perché tutte e tre SONO modelli
+// 3D: il tipo non le distingue. Senza questo filtro il ciclo restituiva la
+// prima che capitava nell'ordine dei vicini, che può benissimo essere il
+// `blend://` — e Heriverse tentava di caricare come glTF un locator che
+// descrive un datablock dentro un .blend.
+//
+// Il contratto è la libreria e il consumatore si adegua: qui si SALTA ciò che
+// non è affar nostro, senza rompersi e senza pretendere che la libreria smetta
+// di scriverlo.
+const HERIVERSE_INTERNAL_SCHEME = "blend://";
+
+Heriverse.isLoadableResourceLocator = (url) => {
+	if (!url) return false;
+	// un grezzo dentro un .blend non è caricabile da qui: lo si ignora, non lo
+	// si tratta come un errore — esiste di proposito e serve a Blender
+	return !String(url).toLowerCase().startsWith(HERIVERSE_INTERNAL_SCHEME);
+};
+
 Heriverse.getLinkFromRepresentationModel = (node) => {
 	let links = node.getNeighborsByRelation(
 		HeriverseNode.RELATIONS.HAS_LINKED_RESOURCE,
 		HeriverseNode.DIRECTIONS.TO
 	);
+	// due passate e non una: prima si cerca una risorsa con un checksum — è
+	// la PUBBLICATA, l'unica di cui si sa anche *cosa* si dovrebbe trovare —
+	// e solo se non c'è ci si accontenta di una derivata qualunque. Un solo
+	// ciclo con l'`if` composto darebbe la prima che capita, che è il difetto
+	// che questo commento esiste per non far tornare.
+	let ripiego = "";
 	for (let link_id in links) {
 		let link = links[link_id];
-		if (link.data && link.data.url_type === "3d_model") {
-			return link.data.url;
-		}
+		if (!link.data || link.data.url_type !== "3d_model") continue;
+		if (!Heriverse.isLoadableResourceLocator(link.data.url)) continue;
+		if (link.data.checksum) return link.data.url;
+		if (!ripiego) ripiego = link.data.url;
 	}
-	return "";
+	return ripiego;
 };
 
 function getConvexShapePoints(shape) {
