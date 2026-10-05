@@ -3,6 +3,7 @@ import HeriverseNode from "./HeriverseNode.js";
 import HeriverseEdge from "./HeriverseEdge.js";
 import MGEdge from "../Multigraph/MGedge.js";
 import Period from "../Models/period.js";
+import { isEmJson, emJsonToMultigraph } from "./emjson.js";
 
 /**
  * Class related to a multidimensional graph.
@@ -41,6 +42,9 @@ export default class HeriverseGraph extends MultidimensionalGraph {
 
 	parseJson() {
 		this._jsonGraph = {};
+		// lo studio com'è nel nodo (em.json): lo si legge, non lo si esporta
+		if (isEmJson(this.json))
+			this.json = emJsonToMultigraph(this.json, HeriverseGraph.stratigraphicTypes);
 		if (this.json && this.json.graphs && Object.keys(this.json.graphs).length) {
 			const graphKeys = Object.keys(this.json.graphs);
 			for (let graphKey of graphKeys) {

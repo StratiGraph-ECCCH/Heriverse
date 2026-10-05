@@ -105,9 +105,13 @@ eq(Heriverse.canConsumeResource({ url_type: "image", url: "a.jpg" }).ok, false,
    "un'immagine non è un modello");
 
 // ── la scelta fra più candidate ───────────────────────────────────────────
+//
+// Dal 5 ottobre 2026 la scelta è la regola della versione per un uso
+// (`chooseVersion`, provata caso per caso in `check-version-for.mjs`): qui si
+// guarda solo che i vecchi casi diano ancora una risposta sensata.
 const nodo = (risorse) => ({
   getNeighborsByRelation: () => Object.fromEntries(
-    risorse.map((d, i) => [`r${i}`, { data: d }])),
+    risorse.map((d, i) => [`r${i}`, { id: `r${i}`, type: "resource", data: d }])),
 });
 const scegli = (risorse) => Heriverse.getLinkFromRepresentationModel(nodo(risorse));
 
@@ -116,14 +120,21 @@ eq(scegli([master, gltf]), "models/muro.gltf",
    + "è la regressione che B2 aveva creato");
 eq(scegli([master]), "",
    "solo un master: NIENTE, invece di tentare di caricare un blend://");
+eq(scegli([{ ...gltf, url: "b.glb", checksum: "sha256:aa" },
+           { ...gltf, url: "a.glb" }]), "b.glb",
+   "due risorse e nessuna versione: il master del primo asset per id, "
+   + "non il primo nell'ordine dei vicini");
 eq(scegli([{ ...gltf, url: "a.glb" },
-           { ...gltf, url: "b.glb", checksum: "sha256:aa" }]), "b.glb",
-   "a parità, vince quella di cui si sa anche COSA ci si deve trovare");
-eq(scegli([{ ...gltf, url: "a.glb", checksum: "sha256:aa" },
-           { ...gltf, url: "b.glb", preferred: true }]), "b.glb",
-   "ma il suggerimento di chi conosce lo studio viene prima del checksum");
-eq(scegli([{ ...gltf, url: "a.glb" }, { ...gltf, url: "b.glb" }]), "a.glb",
-   "senza nessun segnale: la prima, e non si inventa un criterio");
+           { ...gltf, url: "b.glb", preferred: true }]), "a.glb",
+   "`preferred` non si legge più: decide la regola, non un segnale per-viewer");
+eq(scegli([masterDetto]), "",
+   "un master dichiarato in un formato che non si sa aprire: niente, "
+   + "non un .obj tentato sperando");
+eq(scegli([{ url_type: "3d_model", url: "https://n/asset/sha256:ab",
+             media_type: "model/gltf-binary", tier: "master" }]),
+   "https://n/asset/sha256:ab",
+   "un master glTF per impronta (niente estensione, il media_type lo dice) "
+   + "si carica, come ultima risorsa");
 
 // ── T1 · il tileset adesso ha DUE distribuzioni, e nessuna delle due mente ──
 //

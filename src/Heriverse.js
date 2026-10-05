@@ -565,6 +565,9 @@ Heriverse.run = (firstAttempt = true) => {
 			ATON.SceneHub._bLoading = false;
 			Heriverse.Scene = ATON.SceneHub.currData;
 			Heriverse.ResourceScene = data;
+			// uno studio che viene da una stanza: i byte si prendono dal nodo
+			Heriverse.nodeStudy = data.study && data.study.node && data.study.room
+				? { node: data.study.node, room: data.study.room } : null;
 			if (
 				Heriverse.ResourceScene.viewpoints &&
 				Object.keys(Heriverse.ResourceScene.viewpoints).length
@@ -973,6 +976,9 @@ const whyNotCapable = (nome, cosa) => {
 };
 
 const HERIVERSE_GLTF_EXTENSIONS = [".gltf", ".glb"];
+//: un endpoint per impronta (`…/asset/sha256:…`) non ha estensione: il tipo
+//: lo dice il `media_type` che la risorsa dichiara
+const HERIVERSE_GLTF_MEDIA_TYPES = ["model/gltf-binary", "model/gltf+json"];
 
 // Il `tier` LETTO, con lo stesso ripiego che fa `ResourceNode.effective_tier`
 // in s3Dgraphy: un locator `blend://` è un master, tutto il resto è una
@@ -999,14 +1005,17 @@ const readPackaging = (data) => {
  * risorsa che non c'era: sono due situazioni diverse e chi guarda la console
  * deve poterle separare.
  */
-Heriverse.canConsumeResource = (data) => {
+Heriverse.canConsumeResource = (data, { anyTier = false } = {}) => {
 	if (!data || data.url_type !== "3d_model") return { ok: false, why: "not a 3d model" };
 	const url = String(data.url || "");
 	if (!url) return { ok: false, why: "no locator" };
 	// i MASTER si ignorano, e non è un errore: esistono di proposito, sono ciò
 	// da cui le distribution vengono fatte, e un `blend://` descrive un
-	// datablock dentro un file Blender che nessun browser può aprire
-	if (readTier(data) === "master") return { ok: false, why: "master" };
+	// datablock dentro un file Blender che nessun browser può aprire.
+	// `anyTier`: chi sceglie con la regola della versione per un uso chiede
+	// solo se il FORMATO si apre — il master è l'ultima risorsa, e la regola
+	// lo prende dicendolo (un `blend://` resta fuori lo stesso, sotto)
+	if (!anyTier && readTier(data) === "master") return { ok: false, why: "master" };
 	if (!Heriverse.isLoadableResourceLocator(url))
 		return { ok: false, why: "internal locator" };
 
@@ -1018,7 +1027,9 @@ Heriverse.canConsumeResource = (data) => {
 		         state: Heriverse.capabilityState("unpackArchive") };
 
 	const lower = url.toLowerCase().split("?")[0];
-	if (HERIVERSE_GLTF_EXTENSIONS.some((ext) => lower.endsWith(ext)))
+	const media = String(data.media_type || "").toLowerCase();
+	if (HERIVERSE_GLTF_EXTENSIONS.some((ext) => lower.endsWith(ext))
+		|| HERIVERSE_GLTF_MEDIA_TYPES.includes(media))
 		return Heriverse.capabilityState("gltf") === YES
 			? { ok: true }
 			: { ok: false, why: whyNotCapable("gltf", "glTF"),
@@ -1031,6 +1042,11 @@ Heriverse.canConsumeResource = (data) => {
 			? { ok: true }
 			: { ok: false, why: whyNotCapable("tiles3d", "3D Tiles"),
 			    capability: "tiles3d", state: Heriverse.capabilityState("tiles3d") };
+	// un MASTER si carica solo in un formato che si SA aprire: è l'ultima
+	// risorsa, presa dalla regola dicendolo, e non vale la pena tentare un
+	// .obj sperando — quello è un file di lavoro, non un endpoint
+	if (anyTier && readTier(data) === "master")
+		return { ok: false, why: "master in a format this viewer does not know" };
 	// un'estensione che non conosciamo NON si rifiuta: un url senza estensione
 	// è un endpoint che serve i byte giusti, e rifiutarlo renderebbe questa
 	// funzione un elenco chiuso di nomi di file — cioè la cosa che il
@@ -1038,33 +1054,331 @@ Heriverse.canConsumeResource = (data) => {
 	return { ok: true };
 };
 
-Heriverse.getLinkFromRepresentationModel = (node) => {
-	let links = node.getNeighborsByRelation(
-		HeriverseNode.RELATIONS.HAS_LINKED_RESOURCE,
-		HeriverseNode.DIRECTIONS.TO
-	);
-	// UNA passata sola, e una scelta fra le candidate: si raccoglie ciò che
-	// questo viewer sa aprire, poi si preferisce — nell'ordine — chi porta il
-	// `preferred` (un SUGGERIMENTO di chi conosce lo studio, mai un cancello:
-	// se non c'è, la scelta resta valida), poi chi porta un checksum (di quei
-	// byte si sa anche *cosa* ci si deve trovare), poi la prima arrivata.
-	let candidate = [];
-	for (let link_id in links) {
-		let link = links[link_id];
-		if (!link.data) continue;
-		const verdict = Heriverse.canConsumeResource(link.data);
-		if (verdict.ok) candidate.push(link.data);
-		else if (verdict.why !== "master" && verdict.why !== "not a 3d model")
-			// un master saltato è normale e non merita una riga; il resto sì:
-			// «non l'ho caricato» e «non c'era» devono essere distinguibili
-			console.log(`[Heriverse] skipped ${link.data.url}: ${verdict.why}`);
-	}
-	if (!candidate.length) return "";
-	const preferita = candidate.find((d) => d.preferred);
-	if (preferita) return preferita.url;
-	const conChecksum = candidate.find((d) => d.checksum);
-	return (conChecksum || candidate[0]).url;
+// ── LA VERSIONE PER UN USO (E.D., 5 ott 2026) ──────────────────────────────
+//
+// Per Heriverse non si esporta più nulla da Blender: Heriverse legge lo studio
+// e, per ogni modello di rappresentazione, sceglie da sé fra le risorse
+// agganciate la versione da caricare. La regola NON è di Heriverse: è
+// `s3dgraphy.resources.versions.choose_version`, copiata qui riga per riga, e
+// la tabella `src/3dgraphy_config_files/version_for_cases.json` (la stessa di
+// s3Dgraphy) la prova da tutte e due le parti — `tests/check-version-for.mjs`.
+//
+//   1. gli usi si provano in ordine (qui: la versione fatta per Heriverse,
+//      poi per un'app ATON, poi web, poi realtime — H4);
+//   2. candidate sono le VERSIONI (mai il master) che dichiarano quell'uso;
+//   3. con un livello preferito, la candidata a quel livello;
+//   4. altrimenti la più leggera: il `lod_level` più alto, poi meno byte,
+//      poi l'id — la risposta non dipende dall'ordine dei vicini;
+//   5. nessuna versione per nessun uso → il MASTER, e lo si dice;
+//   6. niente da caricare → null.
+Heriverse.USES = ["analysis", "realtime", "web", "mobile_ar", "print", "render", "preview",
+                  "heriverse", "aton"];
+//: gli usi di questo viewer, nell'ordine in cui li prova (`VIEWER_USES` di
+//: s3Dgraphy): una versione fatta per Heriverse — il pacchetto su disco che
+//: EM Tools fa con «Prepare for a use…» — viene prima di qualunque versione web
+Heriverse.VIEWER_USES = ["heriverse", "aton", "web", "realtime"];
+//: il livello che si preferisce, se c'è (null: il più leggero adatto)
+Heriverse.preferredLodLevel = null;
+
+const LOD_LEVEL_RE = /^lod(0|[1-9][0-9]*)$/;
+const lodOrdinal = (e) => {
+	const m = LOD_LEVEL_RE.exec(String(e.lod_level || ""));
+	return m ? parseInt(m[1], 10) : -1;
 };
+const sameLevel = (e, level) => {
+	const want = String(level).trim().toLowerCase();
+	return want === String(e.lod_level || "").toLowerCase()
+		|| want === String(e.level || "").trim().toLowerCase();
+};
+const byId = (a, b) => (String(a.id) < String(b.id) ? -1 : String(a.id) > String(b.id) ? 1 : 0);
+
+/** La versione da caricare per `use` fra `entries` (master e versioni).
+ *  → `{entry, reason, use, note}` oppure null. Copia di `choose_version`. */
+Heriverse.chooseVersion = (entries, use, preferLevel = null) => {
+	entries = (entries || []).filter(Boolean);
+	if (!entries.length) return null;
+	const uses = typeof use === "string" ? [use] : Array.from(use || []);
+	for (const u of uses) {
+		const cands = entries.filter((e) => !e.master && (e.use || []).includes(u));
+		if (!cands.length) continue;
+		if (preferLevel) {
+			const at = cands.filter((e) => sameLevel(e, preferLevel)).sort(byId);
+			if (at.length) return { entry: at[0], reason: "level", use: u, note: "" };
+		}
+		const weight = (e) => {
+			const size = e.size_bytes;
+			const known = typeof size === "number";
+			return [-lodOrdinal(e), known ? 0 : 1, known ? size : 0];
+		};
+		const best = cands.slice().sort((a, b) => {
+			const wa = weight(a), wb = weight(b);
+			for (let i = 0; i < wa.length; i++) if (wa[i] !== wb[i]) return wa[i] - wb[i];
+			return byId(a, b);
+		})[0];
+		const note = preferLevel
+			? `no ${u} version at ${preferLevel}: the lightest ${u} version instead` : "";
+		return { entry: best, reason: "use", use: u, note };
+	}
+	const master = entries.find((e) => e.master);
+	const asked = uses.join(", ") || "no use";
+	if (!master)
+		return { entry: null, reason: "none", use: null, note: `no version for ${asked} and no master` };
+	return { entry: master, reason: "master", use: null,
+	         note: `no version for ${asked}: the master is loaded` };
+};
+
+// ── le versioni lette dal grafo, come le legge `versions_of` ───────────────
+//
+// Una versione è una risorsa prodotta da un passo DTC `lod_generation`
+// (`dtc_had_output`) che ha in ingresso (`dtc_had_input`) la risorsa da cui è
+// fatta; una revisione (`was_revision_of`) prende il posto di quella che
+// rivede. Il livello si CALCOLA dalla catena (master: nessuno; lod0 la prima
+// versione; un passo in più, un numero in più); se il file ne scrive uno
+// diverso, lo si dice nel log, come un checksum che non torna.
+const LOD_KIND = "lod_generation";
+const nbrs = (node, rel, dir) => Object.values(node?.getNeighborsByRelation?.(rel, dir) || {});
+const isResource = (n) => n && n.type === "resource";
+
+const oldestRevision = (node) => {
+	const seen = new Set([node.id]);
+	let cur = node;
+	for (;;) {
+		const older = nbrs(cur, "was_revision_of", "to").sort(byId)[0];
+		if (!older || seen.has(older.id)) return cur;
+		seen.add(older.id);
+		cur = older;
+	}
+};
+const currentRevision = (node) => {
+	const seen = new Set([node.id]);
+	let cur = node;
+	for (;;) {
+		const newer = nbrs(cur, "was_revision_of", "from").sort(byId)[0];
+		if (!newer || seen.has(newer.id)) return cur;
+		seen.add(newer.id);
+		cur = newer;
+	}
+};
+const revisionChain = (node) => {
+	const out = [];
+	const seen = new Set();
+	let cur = oldestRevision(node);
+	while (cur && !seen.has(cur.id)) {
+		out.push(cur);
+		seen.add(cur.id);
+		cur = nbrs(cur, "was_revision_of", "from").sort(byId)[0];
+	}
+	return out;
+};
+const lodStepOf = (node) => {
+	for (const proc of nbrs(oldestRevision(node), "dtc_had_output", "from")) {
+		if (proc.data?.dtc_kind !== LOD_KIND) continue;
+		const input = nbrs(proc, "dtc_had_input", "to").filter(isResource).sort(byId)[0];
+		return { proc, input: input || null };
+	}
+	return { proc: null, input: null };
+};
+
+/** L'asset (il master) di cui `node` è versione; `node` stesso se non lo è. */
+Heriverse.assetOf = (node) => {
+	const seen = new Set();
+	let cur = node;
+	while (cur && !seen.has(cur.id)) {
+		seen.add(cur.id);
+		const { input } = lodStepOf(cur);
+		if (!input) return oldestRevision(cur);
+		cur = input;
+	}
+	return oldestRevision(cur);
+};
+
+const usesOf = (data, params) => {
+	const use = data?.use ?? params?.use;
+	if (Array.isArray(use)) return use.map(String);
+	if (typeof use === "string" && use) return [use];
+	const purpose = String(params?.purpose || "");
+	return Heriverse.USES.includes(purpose) ? [purpose] : [];
+};
+const entryOf = (node, { master, level, lodLevel, use }) => ({
+	id: node.id, name: node.name, master, level: level ?? null,
+	lod_level: master ? null : lodLevel, use: master ? [] : use,
+	size_bytes: typeof node.data?.size_bytes === "number" ? node.data.size_bytes : undefined,
+	checksum: node.data?.checksum || "", url: node.data?.url || "", data: node.data || {},
+});
+
+/** Il master e le sue versioni, ciascuna alla revisione corrente. */
+Heriverse.versionsOf = (assetNode) => {
+	const out = [entryOf(currentRevision(assetNode), { master: true })];
+	const seen = new Set([assetNode.id]);
+	const walk = (from, depth) => {
+		for (const rev of revisionChain(from)) {
+			for (const proc of nbrs(rev, "dtc_had_input", "from")) {
+				if (proc.data?.dtc_kind !== LOD_KIND) continue;
+				const params = proc.data?.parameters || {};
+				for (const child of nbrs(proc, "dtc_had_output", "to").filter(isResource)) {
+					if (seen.has(child.id)) continue;
+					seen.add(child.id);
+					const cur = currentRevision(child);
+					const lodLevel = `lod${depth}`;
+					const written = cur.data?.lod_level || child.data?.lod_level;
+					if (written && written !== lodLevel)
+						console.log(`[Heriverse] lod_level of ${child.name}: the file says `
+							+ `${written}, the chain says ${lodLevel}`);
+					out.push(entryOf(cur, { master: false, level: params.level, lodLevel,
+					                        use: usesOf(cur.data, params) }));
+					walk(child, depth + 1);
+				}
+			}
+		}
+	};
+	walk(assetNode, 0);
+	return out;
+};
+
+/** Le voci fra cui scegliere per un RM: master e versioni degli asset delle sue
+ *  risorse 3D, tenute solo se questo viewer le sa aprire (il tier non conta
+ *  qui: il master è l'ultima risorsa, e si carica se il formato lo permette). */
+Heriverse.entriesForRepresentationModel = (node) => {
+	const linked = Object.values(node.getNeighborsByRelation(
+		HeriverseNode.RELATIONS.HAS_LINKED_RESOURCE, HeriverseNode.DIRECTIONS.TO))
+		.filter((n) => n && n.data);
+	const models = linked.filter((n) => n.data.url_type === "3d_model");
+	const assets = new Map();
+	for (const r of models.length ? models : linked) {
+		const a = Heriverse.assetOf(r);
+		if (a) assets.set(a.id, a);
+	}
+	const entries = [];
+	for (const a of [...assets.values()].sort(byId)) {
+		for (const e of Heriverse.versionsOf(a)) {
+			const verdict = Heriverse.canConsumeResource(e.data, { anyTier: true });
+			if (verdict.ok) entries.push({ ...e, asset_id: a.id });
+			else if (verdict.why !== "not a 3d model" && verdict.why !== "internal locator")
+				// un master saltato in silenzio quando è un `blend://`; il resto
+				// sì: «non l'ho caricato» e «non c'era» devono distinguersi
+				console.log(`[Heriverse] skipped ${e.url}: ${verdict.why}`);
+		}
+	}
+	return entries;
+};
+
+//: «heriverse, aton, web or realtime»
+const saidUses = (uses) => (uses.length > 1
+	? `${uses.slice(0, -1).join(", ")} or ${uses[uses.length - 1]}` : String(uses[0] || "no use"));
+
+const shortSum = (checksum) => {
+	const hex = String(checksum || "").replace(/^sha256:/, "");
+	return hex ? `sha256 ${hex.slice(0, 12)}…` : "no checksum";
+};
+
+/** La risorsa da caricare per un RM: `{data, choice}` oppure null. Lascia una
+ *  riga nel log per ogni scelta. */
+Heriverse.chooseResourceForRepresentationModel = (node) => {
+	const entries = Heriverse.entriesForRepresentationModel(node);
+	const choice = Heriverse.chooseVersion(entries, Heriverse.VIEWER_USES, Heriverse.preferredLodLevel);
+	const label = node.name || node.id;
+	if (!choice || !choice.entry) {
+		const hung = Object.keys(node.getNeighborsByRelation(
+			HeriverseNode.RELATIONS.HAS_LINKED_RESOURCE, HeriverseNode.DIRECTIONS.TO)).length;
+		console.log(hung
+			? `[Heriverse] RM ${label}: nothing this viewer can load`
+				+ (choice?.note ? ` (${choice.note})` : "")
+			: `[Heriverse] RM ${label}: no resource hung on it`);
+		Heriverse.lastChoices[node.id] = choice;
+		return null;
+	}
+	const e = choice.entry;
+	if (choice.reason === "master")
+		console.log(`[Heriverse] RM ${label}: no version for ${saidUses(Heriverse.VIEWER_USES)}, `
+			+ `loading the master (${shortSum(e.checksum)})`);
+	else
+		console.log(`[Heriverse] RM ${label} → ${choice.use} version `
+			+ `${String(e.lod_level || e.level || "").toUpperCase()}, ${shortSum(e.checksum)}`
+			+ (choice.note ? ` (${choice.note})` : ""));
+	Heriverse.lastChoices[node.id] = choice;
+	return { data: e.data, choice };
+};
+//: l'ultima scelta per ogni RM, per chi la vuole leggere (test, pannelli)
+Heriverse.lastChoices = {};
+
+Heriverse.getLinkFromRepresentationModel = (node) => {
+	const chosen = Heriverse.chooseResourceForRepresentationModel(node);
+	return chosen ? chosen.data.url : "";
+};
+
+// ── I BYTE DAL NODO, PER IMPRONTA (E.D., 5 ott 2026) ───────────────────────
+//
+// Quando lo studio viene da una stanza, la risorsa scelta si scarica
+// dall'indirizzo per impronta del nodo — `<nodo>/v1/rooms/<stanza>/asset/
+// sha256:<hex>`, lo stesso che usano EM Tools ed EMStudio — e non da un
+// percorso relativo a un export. I byte scaricati si misurano: sha256 uguale a
+// quella registrata, si caricano; diversa, lo si dice e NON si caricano, perché
+// non sono la versione che lo studio nomina. Uno studio aperto da file tiene
+// il suo percorso locale, come prima.
+//
+// `Heriverse.nodeStudy = {node, room, token}`: la dichiara la scena
+// (`study: {node, room}`) o la pagina; il token non viaggia mai in un file né
+// in un url — si legge da `sessionStorage["heriverse.node_token"]`.
+Heriverse.nodeStudy = null;
+const NODE_ASSET_RE = /^(.*)\/v1\/rooms\/([^/]+)\/asset\/(sha256:[0-9a-f]{64})(?:[?#].*)?$/i;
+
+const sha256Hex = (checksum) => {
+	const m = /^(?:sha256:)?([0-9a-f]{64})$/i.exec(String(checksum || ""));
+	return m ? m[1].toLowerCase() : null;
+};
+
+/** Da dove vengono i byte di una risorsa: `{kind: "node", url, sha256}` o
+ *  `{kind: "path", url}`. */
+Heriverse.sourceOfResource = (data, study = Heriverse.nodeStudy) => {
+	const hex = sha256Hex(data?.checksum);
+	const url = String(data?.url || "");
+	if (study && study.node && study.room && hex)
+		return { kind: "node", sha256: hex,
+		         url: `${String(study.node).replace(/\/+$/, "")}/v1/rooms/`
+		              + `${encodeURIComponent(study.room)}/asset/sha256:${hex}` };
+	const m = NODE_ASSET_RE.exec(url);
+	if (m) {
+		const fromUrl = sha256Hex(m[3]);
+		return { kind: "node", url, sha256: hex || fromUrl };
+	}
+	return { kind: "path", url };
+};
+
+Heriverse.nodeToken = () => {
+	if (Heriverse.nodeStudy?.token) return Heriverse.nodeStudy.token;
+	try {
+		return globalThis.sessionStorage?.getItem("heriverse.node_token") || null;
+	} catch (e) {
+		return null;
+	}
+};
+
+const hexOf = (buffer) => Array.from(new Uint8Array(buffer))
+	.map((b) => b.toString(16).padStart(2, "0")).join("");
+
+/** Scarica dal nodo e misura. → `{ok, buffer, received, expected, line}`. */
+Heriverse.fetchVerified = async (source, label, fetchFn = globalThis.fetch) => {
+	const token = Heriverse.nodeToken();
+	const res = await fetchFn(source.url, token ? { headers: { Authorization: `Bearer ${token}` } } : {});
+	if (!res.ok) {
+		const line = `[Heriverse] RM ${label}: the node answered ${res.status} for ${source.url}`;
+		console.log(line);
+		return { ok: false, status: res.status, line };
+	}
+	const buffer = await res.arrayBuffer();
+	const received = hexOf(await globalThis.crypto.subtle.digest("SHA-256", buffer));
+	const expected = source.sha256;
+	const ok = !expected || received === expected;
+	const line = !expected
+		? `[Heriverse] RM ${label}: ${buffer.byteLength} bytes from the node, sha256 ${received.slice(0, 12)}… (no registered sha256 to compare)`
+		: ok
+			? `[Heriverse] RM ${label}: ${buffer.byteLength} bytes from the node, sha256 ${received.slice(0, 12)}… = the registered one`
+			: `[Heriverse] RM ${label}: the bytes from the node are NOT the registered version — registered sha256 ${expected.slice(0, 12)}…, received ${received.slice(0, 12)}…; not loaded`;
+	console.log(line);
+	return { ok, buffer, received, expected, line };
+};
+//: cosa è stato caricato per ogni RM, per chi lo vuole leggere
+Heriverse.lastLoads = {};
 
 function getConvexShapePoints(shape) {
 	const convexshape = shape?.data?.convexshape;
@@ -1876,14 +2190,57 @@ function applyRepresentationModelTransform(sceneNode, representationModelNode) {
 	}
 }
 
+// I byte già misurati entrano in ATON per la stessa via di `load()` — il
+// GLTFLoader — senza un url: un `blob:` non passa da
+// `resolveCollectionURL`, che lo prenderebbe per un percorso della collezione.
+// La richiesta si CONTA come la conta `load()` (`_assetReqNew` alla partenza
+// del download, `_assetReqComplete` qui): è quando l'ultima si chiude che
+// ATON ricalcola i limiti della scena e inquadra.
+Heriverse.loadModelBytes = (sceneNode, buffer, reqKey, onComplete) => {
+	ATON._aLoader.parse(buffer, "", (data) => {
+		const model = data.scene || data.scenes[0];
+		ATON.Utils.modelVisitor(sceneNode, model);
+		sceneNode.add(model);
+		ATON.Utils.registerAniMixers(sceneNode, data);
+		ATON._bqScene = true;
+		ATON.Utils.updatePickGraph(undefined, sceneNode.type);
+		sceneNode.dirtyBound();
+		if (reqKey) ATON._assetReqComplete(reqKey);
+		if (onComplete) onComplete();
+	}, (err) => {
+		console.error("[Heriverse] glTF from the node could not be parsed", err);
+		if (reqKey) ATON._assetReqComplete(reqKey);
+	});
+};
+
 function attachRepresentationModelToEpoch(representationModelNode, epochNode) {
 	if (!epochNode) return;
 
 	const name = representationModelNode.name;
-	const url = Heriverse.getLinkFromRepresentationModel(representationModelNode);
-	const resourceUrl = Heriverse.getLinkToResource(url);
+	const chosen = Heriverse.chooseResourceForRepresentationModel(representationModelNode);
+	if (!chosen) return;
+	const source = Heriverse.sourceOfResource(chosen.data);
 
-	const sceneNode = ATON.createSceneNode(name).load(resourceUrl);
+	const sceneNode = ATON.createSceneNode(name);
+	if (source.kind === "node") {
+		ATON._assetReqNew(source.url);
+		Heriverse.fetchVerified(source, name).then((got) => {
+			Heriverse.lastLoads[representationModelNode.id] = {
+				name, url: source.url, choice: chosen.choice.reason, use: chosen.choice.use,
+				lod_level: chosen.choice.entry.lod_level, registered: got.expected,
+				received: got.received, ok: got.ok, line: got.line };
+			if (got.ok) Heriverse.loadModelBytes(sceneNode, got.buffer, source.url);
+			else ATON._assetReqComplete(source.url);
+		}).catch((err) => {
+			console.error(`[Heriverse] RM ${name}: download failed`, err);
+			ATON._assetReqComplete(source.url);
+		});
+	} else {
+		Heriverse.lastLoads[representationModelNode.id] = {
+			name, url: source.url, choice: chosen.choice.reason, use: chosen.choice.use,
+			lod_level: chosen.choice.entry.lod_level };
+		sceneNode.load(Heriverse.getLinkToResource(source.url));
+	}
 
 	sceneNode.attachTo(epochNode.id);
 
