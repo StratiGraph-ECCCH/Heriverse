@@ -25,6 +25,7 @@ import ShelfGraph from "./ShelfGraph/ShelfGraph.js";
 import { PointerLockControls } from "./controls/PointerLockControls.js";
 import Period from "./Models/period.js";
 import HeriverseGraphDrawer from "./HeriverseGraphDrawer.js";
+import { Archive3tz, Tiles3tzPlugin, archiveBase, httpSource } from "./HeriverseTiles3tz.js";
 
 let iconFolder = window.location.href.includes("heriverse-wapp")
 	? "/a/heriverse-wapp/res/graphicons/"
@@ -936,6 +937,7 @@ Heriverse.CAPABILITY = { YES: "yes", NO: "no", UNKNOWN: "unknown" };
 //: cieco, e chi lo legge non può fare niente di diverso da chi legge «no».
 Heriverse.CAPABILITY_SOURCES = {
 	tiles3d: "ATON (/dist/ATON.min.js, fuori da questo checkout)",
+	tiles3tz: "src/HeriverseTiles3tz.js (il lettore di EMStudio)",
 };
 
 Heriverse.CAPABILITIES = {
@@ -947,7 +949,16 @@ Heriverse.CAPABILITIES = {
 	// `src/` né in `vendors/`, ma il caricamento vero lo fa ATON, che arriva
 	// dal deploy: da qui non è verificabile. Chi apre ATON e trova il loader
 	// mette YES; chi apre ATON e non lo trova mette NO. In un posto solo.
-	tiles3d: Heriverse.CAPABILITY.UNKNOWN,
+	//
+	// TEMPLU MARE v2 · C1 (6 ott 2026): ATON aperto, e il loader c'è —
+	// `ATON.MRes.loadTileSetFromURL` (ATON.mres.js, 3d-tiles-renderer 0.5.3),
+	// al quale `ATON.Node.load()` manda ogni url `.json` (ATON.node.js); misurato
+	// sul tileset di Templu Mare v2 da una cartella. Quindi YES.
+	tiles3d: Heriverse.CAPABILITY.YES,
+	// UN `.3tz` (il tileset in un file solo, letto dalla fine e a pezzi, senza
+	// scompattarlo): lo legge `src/HeriverseTiles3tz.js`, che è in questo repo.
+	// Non è «scompattare un archivio»: nessuna tessera arriva sul disco.
+	tiles3tz: Heriverse.CAPABILITY.YES,
 	// SCOMPATTARE UN ARCHIVIO: **no, e questo sì che si vede da qui.**
 	// `JSZip` in questo repo c'è, ma serve all'EXPORT
 	// (`HeriverseImportExport.exportNodesAsZip`): impacchetta per far
@@ -998,6 +1009,52 @@ const readPackaging = (data) => {
 	return url.endsWith("/") ? "directory" : "file";
 };
 
+//: il media type di un 3D Tiles Archive (s3Dgraphy `MEDIA_TYPE_3TZ`)
+Heriverse.MEDIA_TYPE_3TZ = "application/vnd.maxar.archive.3tz+zip";
+
+/** TEMPLU MARE v2 · C1 · che cosa è una risorsa per il lettore di tessere,
+ *  letto da ciò che DICHIARA e non solo dal suo indirizzo (un url per
+ *  impronta, `…/asset/sha256:…`, non dice niente): `"3tz"` (un archivio letto
+ *  dalla fine), `"directory"` (un albero servito com'è: `packaging: directory`
+ *  o un locator `tileset.json`), `""` (non è un tileset: uno zip qualunque non
+ *  lo è). Lo stesso `tilesKindOf` dello Spazio di EMStudio. */
+Heriverse.tilesKindOf = (data) => {
+	const url = String(data?.url || "").toLowerCase().split(/[?#]/)[0];
+	if (url.endsWith(".3tz") || String(data?.media_type || "").toLowerCase() === Heriverse.MEDIA_TYPE_3TZ)
+		return "3tz";
+	if (data?.packaging === "directory" || /(^|\/)tileset\.json$/.test(url)) return "directory";
+	return "";
+};
+
+/** C1 · la RAPPRESENTAZIONE di una versione che un nodo sa servire. Un nodo
+ *  tiene un file per impronta: una cartella di tessere non ce l'ha, il suo
+ *  `.3tz` sì. Si cercano le risorse legate da `dtc_derived_from` (nei due
+ *  versi, di seguito, dello stesso `url_type`: `pick_representation` di
+ *  s3Dgraphy), la più vicina prima e a pari distanza la `preferred`, e si
+ *  prende la prima che è un `.3tz` — uno zip qualunque accanto (il master)
+ *  non è un tileset. → il nodo, o null. */
+Heriverse.servableRepresentation = (node) => {
+	if (!node) return null;
+	const kind = node.data?.url_type || "";
+	const seen = new Set([node.id]);
+	let frontier = [node];
+	while (frontier.length) {
+		const next = [];
+		for (const cur of frontier) {
+			const near = [...nbrs(cur, "dtc_derived_from", "to"), ...nbrs(cur, "dtc_derived_from", "from")]
+				.filter((n) => isResource(n) && !seen.has(n.id)
+					&& (!kind || !n.data?.url_type || n.data.url_type === kind))
+				.sort(byId);
+			for (const n of near) { seen.add(n.id); next.push(n); }
+		}
+		const hit = next.filter((n) => Heriverse.tilesKindOf(n.data) === "3tz")
+			.sort((a, b) => Number(!a.data?.preferred) - Number(!b.data?.preferred))[0];
+		if (hit) return hit;
+		frontier = next;
+	}
+	return null;
+};
+
 /**
  * Questo viewer sa aprire questa risorsa? → `{ok}` oppure `{ok:false, why}`.
  *
@@ -1020,6 +1077,12 @@ Heriverse.canConsumeResource = (data, { anyTier = false } = {}) => {
 		return { ok: false, why: "internal locator" };
 
 	const YES = Heriverse.CAPABILITY.YES;
+	// C1 · un `.3tz` è un archivio che NON si scompatta: lo si legge dalla fine
+	if (Heriverse.tilesKindOf(data) === "3tz")
+		return Heriverse.capabilityState("tiles3tz") === YES
+			? { ok: true }
+			: { ok: false, why: whyNotCapable("tiles3tz", "a 3D Tiles archive"),
+			    capability: "tiles3tz", state: Heriverse.capabilityState("tiles3tz") };
 	const packaging = readPackaging(data);
 	if (packaging === "archive" && Heriverse.capabilityState("unpackArchive") !== YES)
 		return { ok: false, why: whyNotCapable("unpackArchive", "an archive"),
@@ -2213,16 +2276,88 @@ Heriverse.loadModelBytes = (sceneNode, buffer, reqKey, onComplete) => {
 	});
 };
 
+// TEMPLU MARE v2 · C1 · un TILESET (3D Tiles). È Z-up — 3D Tiles, e 3D Survey
+// Collection scrive i volumi nel sistema di Blender — mentre le versioni glb
+// del dataset sono Y-up (l'export glTF: x, y, z → x, z, −y), e ATON non gira
+// un tileset che non è georiferito. Lo si carica quindi in un nodo figlio
+// ruotato di −90° attorno a X: la stessa rotazione dello Spazio di EMStudio
+// (`tiles3d.ts`), e il tileset cade dove cadono le versioni glb.
+//   · da una CARTELLA: l'url del `tileset.json` (o del `.3tz`), accanto all'em.json;
+//   · da un NODO: il `.3tz` per impronta, letto a pezzi con `Range` e col token,
+//     sotto una base che nessuno serve: il plugin risponde dall'archivio prima
+//     della rete. I 199 MB non si misurano interi — si leggerebbero tutti —
+//     ma la porta sì: il `tileset.json` dell'archivio deve avere la sha256 che
+//     la versione registra per la sua porta, se no il tileset non si carica.
+Heriverse.loadTileset = (sceneNode, source, kind, label, expectedDoor = null) => {
+	const inner = ATON.createSceneNode(`${sceneNode.nid || label}#tiles`);
+	inner.rotation.set(-Math.PI / 2, 0, 0);
+	inner.attachTo(sceneNode);
+	if (kind !== "3tz") {
+		inner.load(Heriverse.getLinkToResource(source.url));
+		return Promise.resolve({ kind, url: source.url, line: `[Heriverse] RM ${label}: tileset from ${source.url}` });
+	}
+	const token = source.kind === "node" ? Heriverse.nodeToken() : null;
+	const fetchFn = (u, opts = {}) => globalThis.fetch(u, token
+		? { ...opts, headers: { ...(opts.headers || {}), Authorization: `Bearer ${token}` } } : opts);
+	const url = source.kind === "node" ? source.url : Heriverse.getLinkToResource(source.url);
+	const archive = Archive3tz.open(httpSource(url, fetchFn));
+	return archive.then(async (a) => {
+		const door = await a.readEntry("tileset.json");
+		const got = door ? hexOf(await globalThis.crypto.subtle.digest("SHA-256", door)) : null;
+		const want = sha256Hex(expectedDoor);
+		const ok = !!door && (!want || got === want);
+		const line = !door
+			? `[Heriverse] RM ${label}: the archive has no tileset.json; not loaded`
+			: `[Heriverse] RM ${label}: tileset from the archive ${url} (${a.stats.entries} files, read by Range), `
+				+ `its tileset.json sha256 ${got.slice(0, 12)}…`
+				+ (want ? (ok ? " = the registered door" : ` ≠ the registered ${want.slice(0, 12)}…; not loaded`) : "");
+		console.log(line);
+		if (ok) {
+			const base = archiveBase();
+			ATON.MRes.loadTileSetFromURL(`${base}tileset.json`, inner);
+			// il renderer ATON è appena nato e non ha ancora chiesto la radice
+			// (la chiede al primo update): il plugin arriva prima della rete
+			const ts = ATON.MRes._tsets[ATON.MRes._tsets.length - 1];
+			ts.registerPlugin(new Tiles3tzPlugin(Promise.resolve(a), base));
+		}
+		return { kind, url, ok, door: got, expected: want, entries: a.stats.entries, line };
+	}, (err) => {
+		const line = `[Heriverse] RM ${label}: the archive ${url} could not be opened (${err?.message || err})`;
+		console.log(line);
+		return { kind, url, ok: false, line };
+	});
+};
+
 function attachRepresentationModelToEpoch(representationModelNode, epochNode) {
 	if (!epochNode) return;
 
 	const name = representationModelNode.name;
 	const chosen = Heriverse.chooseResourceForRepresentationModel(representationModelNode);
 	if (!chosen) return;
-	const source = Heriverse.sourceOfResource(chosen.data);
+	// C1 · da un nodo, una cartella di tessere non si serve: si prende la sua
+	// rappresentazione in un file (il `.3tz`), se lo studio la dichiara
+	let data = chosen.data;
+	if (Heriverse.nodeStudy && Heriverse.tilesKindOf(data) === "directory") {
+		const alt = Heriverse.servableRepresentation(Heriverse.currMG?.getNode?.(chosen.choice.entry.id));
+		if (alt) {
+			console.log(`[Heriverse] RM ${name}: the tileset folder is not on the node, its archive is (${alt.name})`);
+			data = alt.data;
+		}
+	}
+	const source = Heriverse.sourceOfResource(data);
+	const tiles = Heriverse.tilesKindOf(data);
 
 	const sceneNode = ATON.createSceneNode(name);
-	if (source.kind === "node") {
+	if (tiles) {
+		ATON._assetReqNew(`${name}#tiles`);
+		Heriverse.loadTileset(sceneNode, source, tiles, name,
+			tiles === "3tz" && data !== chosen.data ? chosen.data.checksum : null).then((got) => {
+			Heriverse.lastLoads[representationModelNode.id] = {
+				name, url: got.url, tiles, choice: chosen.choice.reason, use: chosen.choice.use,
+				lod_level: chosen.choice.entry.lod_level, ok: got.ok !== false, door: got.door,
+				registered: got.expected, entries: got.entries, line: got.line };
+		}).finally(() => ATON._assetReqComplete(`${name}#tiles`));
+	} else if (source.kind === "node") {
 		ATON._assetReqNew(source.url);
 		Heriverse.fetchVerified(source, name).then((got) => {
 			Heriverse.lastLoads[representationModelNode.id] = {

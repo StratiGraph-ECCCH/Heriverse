@@ -28,7 +28,12 @@ const eq = (g, e, w) => { assert.deepEqual(g, e, `${w} — ho ${JSON.stringify(g
 
 // ── le capacità sono DATO, non condizioni sparse ──────────────────────────
 eq(Object.keys(Heriverse.CAPABILITIES).sort(),
-   ["gltf", "tiles3d", "unpackArchive"], "le tre capacità dichiarate");
+   ["gltf", "tiles3d", "tiles3tz", "unpackArchive"], "le quattro capacità dichiarate");
+// C1 (Templu Mare v2, 6 ott 2026): ATON aperto, il loader c'è
+// (`ATON.MRes.loadTileSetFromURL`), misurato su un tileset vero: YES. E il
+// `.3tz` lo legge `src/HeriverseTiles3tz.js`, in questo repo: YES.
+eq(Heriverse.capabilityState("tiles3d"), "yes", "3D Tiles: sì, misurato in ATON");
+eq(Heriverse.capabilityState("tiles3tz"), "yes", "un .3tz: sì, il lettore è qui");
 eq(Heriverse.capabilityState("gltf"), "yes",
    "glTF: sì, e si vede da qui — è la riga che carica ogni modello");
 eq(Heriverse.capabilityState("unpackArchive"), "no",
@@ -41,6 +46,10 @@ eq(Heriverse.capabilityState("unpackArchive"), "no",
 // dal deploy, e da questo checkout non è verificabile. Dichiarare falso ciò
 // che non si è misurato è la stessa bugia piccola che era stata rifiutata sul
 // packaging.
+// (il caso del «non so» resta, provato su una capacità messa a UNKNOWN: è la
+// forma che ha chi non ha ancora aperto ATON)
+const salvaT3 = Heriverse.CAPABILITIES.tiles3d;
+Heriverse.CAPABILITIES.tiles3d = Heriverse.CAPABILITY.UNKNOWN;
 eq(Heriverse.capabilityState("tiles3d"), "unknown",
    "3D Tiles: sconosciuto, non falso");
 {
@@ -59,6 +68,7 @@ eq(Heriverse.capabilityState("tiles3d"), "unknown",
   ok(/cannot load/.test(z.why) && !/cannot tell/.test(z.why),
      "un NO misurato parla diversamente da un NON SO");
 }
+Heriverse.CAPABILITIES.tiles3d = salvaT3;
 {
   // i booleani di prima continuano a valere: un ramo non aggiornato non deve
   // smettere di funzionare per la forma di un valore
@@ -93,8 +103,9 @@ ok(!Heriverse.canConsumeResource(zipDetto).ok,
 
 const tiles2 = { url_type: "3d_model", url: "tilesets/r/tileset.json",
                  packaging: "directory" };
-ok(Heriverse.canConsumeResource(tiles2).why.includes("3D Tiles"),
-   "un tileset.json viene riconosciuto come 3D Tiles e non come glTF");
+eq(Heriverse.canConsumeResource(tiles2).ok, true,
+   "un tileset.json si apre (3D Tiles in ATON)");
+eq(Heriverse.tilesKindOf(tiles2), "directory", "…ed è un tileset in cartella, non un glTF");
 
 const senzaEstensione = { url_type: "3d_model", url: "https://x/asset/abc" };
 eq(Heriverse.canConsumeResource(senzaEstensione).ok, true,
@@ -149,19 +160,61 @@ eq(scegli([{ url_type: "3d_model", url: "https://n/asset/sha256:ab",
   const archivio = { url_type: "3d_model", url: "tilesets/r.zip",
                      packaging: "archive", tier: "distribution",
                      checksum: "sha256:bb" };
-  eq(scegli([albero, archivio]), "",
-     "oggi non ne carica nessuna, e non ne tenta una sperando");
-  const a = Heriverse.canConsumeResource(albero);
+  // C1: ATON si è scoperto capace, e una riga sola ha cambiato l'esito
+  eq(scegli([albero, archivio]), "tilesets/r/tileset.json",
+     "YES: prende l'albero servito — e non lo zip");
   const b = Heriverse.canConsumeResource(archivio);
+  eq(b.capability, "unpackArchive", "lo zip resta fuori, e dice quale capacità manca");
+  // finché ATON era da verificare, nessuna delle due: per DUE ragioni diverse
+  const salva = Heriverse.CAPABILITIES.tiles3d;
+  Heriverse.CAPABILITIES.tiles3d = Heriverse.CAPABILITY.UNKNOWN;
+  eq(scegli([albero, archivio]), "", "UNKNOWN: non ne tenta una sperando");
+  const a = Heriverse.canConsumeResource(albero);
   eq([a.capability, b.capability], ["tiles3d", "unpackArchive"],
      "…e ciascuna dice QUALE capacità manca");
   ok(a.why !== b.why, "due ragioni diverse, non una voce sola");
-  // …e il giorno che ATON si scopre capace, una riga sola cambia l'esito
-  const salva = Heriverse.CAPABILITIES.tiles3d;
-  Heriverse.CAPABILITIES.tiles3d = Heriverse.CAPABILITY.YES;
-  eq(scegli([albero, archivio]), "tilesets/r/tileset.json",
-     "dichiarato YES, prende l'albero servito — e non l'archivio");
   Heriverse.CAPABILITIES.tiles3d = salva;
+}
+
+// ── C1 · il .3tz: un archivio che NON si scompatta ────────────────────────
+{
+  const tz = { url_type: "3d_model", url: "../RB/cesium/TempluMare.3tz", packaging: "archive",
+               media_type: "application/vnd.maxar.archive.3tz+zip", checksum: "sha256:cc" };
+  eq(Heriverse.tilesKindOf(tz), "3tz", "un .3tz si riconosce");
+  eq(Heriverse.canConsumeResource(tz).ok, true,
+     "…e si apre, anche se è un archive: non si scompatta, si legge dalla fine");
+  const perImpronta = { url_type: "3d_model", url: "https://n/v1/rooms/r/asset/sha256:" + "c".repeat(64),
+                        packaging: "archive", media_type: "application/vnd.maxar.archive.3tz+zip" };
+  eq(Heriverse.tilesKindOf(perImpronta), "3tz",
+     "…anche per impronta, dove l'url non dice niente: lo dice il media_type");
+  eq(Heriverse.tilesKindOf({ url: "x.zip", packaging: "archive" }), "",
+     "uno zip qualunque non è un tileset");
+}
+
+// ── C1 · da un nodo, la rappresentazione che il nodo sa servire ───────────
+{
+  // versione cartella ←dtc_derived_from— .3tz (preferred); lo zip master è a
+  // pari distanza dall'altra parte, ed è anche lui un archive
+  const nodi = {};
+  const rel = [];
+  const mk = (id, data) => (nodi[id] = { id, type: "resource", name: id, data,
+    getNeighborsByRelation: (r, dir) => Object.fromEntries(rel
+      .filter((e) => e.r === r && (dir === "to" ? e.s === id : e.t === id))
+      .map((e) => { const o = nodi[dir === "to" ? e.t : e.s]; return [o.id, o]; })) });
+  mk("zip", { url_type: "3d_model", url: "../RB/cesium/TempluMare.zip", packaging: "archive", tier: "master" });
+  mk("dir", { url_type: "3d_model", url: "../RB/cesium/TempluMare/tileset.json", packaging: "directory" });
+  mk("tz", { url_type: "3d_model", url: "../RB/cesium/TempluMare.3tz", packaging: "archive",
+             media_type: "application/vnd.maxar.archive.3tz+zip", preferred: true });
+  mk("foto", { url_type: "dataset", url: "smb://x/y.psx" });
+  rel.push({ r: "dtc_derived_from", s: "dir", t: "zip" }, { r: "dtc_derived_from", s: "tz", t: "dir" },
+           { r: "dtc_derived_from", s: "zip", t: "foto" });
+  eq(Heriverse.servableRepresentation(nodi.dir)?.id, "tz",
+     "dalla cartella al suo .3tz — non allo zip, che non è un tileset");
+  delete nodi.tz.data.preferred;
+  eq(Heriverse.servableRepresentation(nodi.dir)?.id, "tz", "…anche senza preferred: lo zip non è un .3tz");
+  rel.splice(1, 1);
+  eq(Heriverse.servableRepresentation(nodi.dir), null,
+     "senza un .3tz dichiarato, niente: non si inventa un indirizzo");
 }
 
 // ── RETRO-COMPATIBILITÀ: un project.json PRE-notte ────────────────────────
