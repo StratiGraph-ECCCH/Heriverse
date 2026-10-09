@@ -26,6 +26,7 @@ import { PointerLockControls } from "./controls/PointerLockControls.js";
 import Period from "./Models/period.js";
 import HeriverseGraphDrawer from "./HeriverseGraphDrawer.js";
 import { Archive3tz, Tiles3tzPlugin, archiveBase, httpSource } from "./HeriverseTiles3tz.js";
+import { fetchFileSet, fileSetBase, fileSetURLModifier, mimeOf } from "./HeriverseFileSet.js";
 
 let iconFolder = window.location.href.includes("heriverse-wapp")
 	? "/a/heriverse-wapp/res/graphicons/"
@@ -1407,6 +1408,19 @@ Heriverse.sourceOfResource = (data, study = Heriverse.nodeStudy) => {
 	return { kind: "path", url };
 };
 
+// MICRO-HERIVERSE-INSIEMI (9 ott 2026) · una versione di PIÙ file (un glTF col
+// suo `.bin` e le texture) è una risorsa `packaging: file_set`, `digest_covers:
+// members`: il suo checksum è il digest dei membri, che non è un file, e un
+// nodo non lo serve (404, misurato). Da un nodo si apre dalla porta per la SUA
+// impronta e coi membri per le loro (`src/HeriverseFileSet.js`); da una
+// cartella non cambia niente.
+Heriverse.isFileSet = (data) => data?.digest_covers === "members" || data?.packaging === "file_set";
+
+/** I file di una risorsa-insieme (`has_file` → `ResourceFile`): i loro `data`
+ *  (url, checksum, media_type), in ordine di id. */
+Heriverse.membersOfResource = (node) => nbrs(node, "has_file", "to")
+	.filter((n) => n && n.type === "resource_file" && n.data?.url).sort(byId).map((n) => n.data);
+
 Heriverse.nodeToken = () => {
 	if (Heriverse.nodeStudy?.token) return Heriverse.nodeStudy.token;
 	try {
@@ -2259,8 +2273,10 @@ function applyRepresentationModelTransform(sceneNode, representationModelNode) {
 // La richiesta si CONTA come la conta `load()` (`_assetReqNew` alla partenza
 // del download, `_assetReqComplete` qui): è quando l'ultima si chiude che
 // ATON ricalcola i limiti della scena e inquadra.
-Heriverse.loadModelBytes = (sceneNode, buffer, reqKey, onComplete) => {
-	ATON._aLoader.parse(buffer, "", (data) => {
+// `opts.loader`/`opts.path`: un insieme dal nodo passa il suo GLTFLoader (con
+// l'URL modifier che risolve i membri) e la base sotto cui li chiede.
+Heriverse.loadModelBytes = (sceneNode, buffer, reqKey, onComplete, opts = {}) => {
+	(opts.loader || ATON._aLoader).parse(buffer, opts.path || "", (data) => {
 		const model = data.scene || data.scenes[0];
 		ATON.Utils.modelVisitor(sceneNode, model);
 		sceneNode.add(model);
@@ -2273,6 +2289,73 @@ Heriverse.loadModelBytes = (sceneNode, buffer, reqKey, onComplete) => {
 	}, (err) => {
 		console.error("[Heriverse] glTF from the node could not be parsed", err);
 		if (reqKey) ATON._assetReqComplete(reqKey);
+		if (opts.onError) opts.onError(err);
+	});
+};
+
+// MICRO-HERIVERSE-INSIEMI · i byte di una versione dentro un nodo della scena,
+// da dove lo studio li tiene: da una CARTELLA l'url relativo, com'era; da un
+// NODO il file per impronta, misurato; da un nodo un INSIEME (glTF + .bin +
+// texture), la porta e i membri per le loro impronte, ciascuno misurato. La
+// usano gli RM e le RMDoc. → Promise di `{url, ok, line, …}` per `lastLoads`.
+Heriverse.loadVersion = (sceneNode, data, resourceNode, label) => {
+	const source = Heriverse.sourceOfResource(data);
+	if (source.kind === "node" && Heriverse.isFileSet(data))
+		return Heriverse.loadFileSetFromNode(sceneNode, data, resourceNode, label);
+	if (source.kind === "node") {
+		ATON._assetReqNew(source.url);
+		return Heriverse.fetchVerified(source, label).then((got) => {
+			if (got.ok) Heriverse.loadModelBytes(sceneNode, got.buffer, source.url);
+			else ATON._assetReqComplete(source.url);
+			return { url: source.url, registered: got.expected, received: got.received, ok: got.ok, line: got.line };
+		}).catch((err) => {
+			console.error(`[Heriverse] RM ${label}: download failed`, err);
+			ATON._assetReqComplete(source.url);
+			return { url: source.url, ok: false, line: String(err?.message || err) };
+		});
+	}
+	sceneNode.load(Heriverse.getLinkToResource(source.url));
+	return Promise.resolve({ url: source.url });
+};
+
+// Un insieme dal nodo (`src/HeriverseFileSet.js`): la porta per la sua sha256,
+// poi i file che nomina, ciascuno per la sua; nessuno arriva al loader prima
+// di essere misurato. Il loader è uno per insieme, col suo LoadingManager:
+// l'URL modifier risolve gli uri della porta (sotto una base che nessuno
+// serve, come il `.3tz`) con i byte già misurati, e non tocca gli altri
+// caricamenti. Un membro che manca o non torna: niente si carica, e la riga
+// del log dice quale file.
+Heriverse.loadFileSetFromNode = (sceneNode, data, resourceNode, label) => {
+	const key = `${label}#set`;
+	ATON._assetReqNew(key);
+	const members = Heriverse.membersOfResource(resourceNode);
+	const fetchMember = (member, what) => {
+		const src = Heriverse.sourceOfResource(member);
+		return src.kind === "node" ? Heriverse.fetchVerified(src, what) : Promise.resolve({ ok: false });
+	};
+	return fetchFileSet({ data, members, label, fetchMember }).then((set) => {
+		console.log(set.line);
+		const url = set.door ? Heriverse.sourceOfResource(set.door).url : null;
+		if (!set.ok) {
+			ATON._assetReqComplete(key);
+			return { url, ok: false, set: true, line: set.line };
+		}
+		const urls = new Map();
+		for (const [uri, f] of set.files)
+			urls.set(uri, URL.createObjectURL(new Blob([f.buffer], { type: mimeOf(f.member) })));
+		const base = fileSetBase();
+		const manager = new THREE.LoadingManager();
+		manager.setURLModifier(fileSetURLModifier(base, set.files, (uri) => urls.get(uri)));
+		const loader = new THREE.GLTFLoader(manager);
+		if (ATON._dracoLoader) loader.setDRACOLoader(ATON._dracoLoader);
+		if (ATON._ktx2Loader) loader.setKTX2Loader(ATON._ktx2Loader);
+		const release = () => urls.forEach((u) => URL.revokeObjectURL(u));
+		Heriverse.loadModelBytes(sceneNode, set.doorBuffer, key, release, { loader, path: base, onError: release });
+		return { url, ok: true, set: true, files: 1 + set.files.size, line: set.line };
+	}).catch((err) => {
+		console.error(`[Heriverse] RM ${label}: the set could not be downloaded`, err);
+		ATON._assetReqComplete(key);
+		return { url: null, ok: false, set: true, line: String(err?.message || err) };
 	});
 };
 
@@ -2357,24 +2440,12 @@ function attachRepresentationModelToEpoch(representationModelNode, epochNode) {
 				lod_level: chosen.choice.entry.lod_level, ok: got.ok !== false, door: got.door,
 				registered: got.expected, entries: got.entries, line: got.line };
 		}).finally(() => ATON._assetReqComplete(`${name}#tiles`));
-	} else if (source.kind === "node") {
-		ATON._assetReqNew(source.url);
-		Heriverse.fetchVerified(source, name).then((got) => {
-			Heriverse.lastLoads[representationModelNode.id] = {
-				name, url: source.url, choice: chosen.choice.reason, use: chosen.choice.use,
-				lod_level: chosen.choice.entry.lod_level, registered: got.expected,
-				received: got.received, ok: got.ok, line: got.line };
-			if (got.ok) Heriverse.loadModelBytes(sceneNode, got.buffer, source.url);
-			else ATON._assetReqComplete(source.url);
-		}).catch((err) => {
-			console.error(`[Heriverse] RM ${name}: download failed`, err);
-			ATON._assetReqComplete(source.url);
-		});
 	} else {
-		Heriverse.lastLoads[representationModelNode.id] = {
-			name, url: source.url, choice: chosen.choice.reason, use: chosen.choice.use,
-			lod_level: chosen.choice.entry.lod_level };
-		sceneNode.load(Heriverse.getLinkToResource(source.url));
+		const said = { name, choice: chosen.choice.reason, use: chosen.choice.use,
+		               lod_level: chosen.choice.entry.lod_level };
+		Heriverse.lastLoads[representationModelNode.id] = { ...said, url: source.url };
+		Heriverse.loadVersion(sceneNode, data, Heriverse.currMG?.getNode?.(chosen.choice.entry.id), name)
+			.then((got) => { Heriverse.lastLoads[representationModelNode.id] = { ...said, ...got }; });
 	}
 
 	sceneNode.attachTo(epochNode.id);

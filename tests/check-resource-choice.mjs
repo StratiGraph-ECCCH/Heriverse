@@ -217,6 +217,27 @@ eq(scegli([{ url_type: "3d_model", url: "https://n/asset/sha256:ab",
      "senza un .3tz dichiarato, niente: non si inventa un indirizzo");
 }
 
+// ── MICRO-HERIVERSE-INSIEMI · una versione di più file ────────────────────
+//
+// glTF + .bin + texture: `file_set`, checksum = digest dei membri, url = la
+// porta. La regola la sceglie come un glTF qualunque, e dalla cartella si
+// carica dalla porta; dal nodo il digest dei membri non è un file, e la si
+// apre dai membri (`check-file-set.mjs`).
+{
+  const insieme = { url_type: "3d_model", url: "versions/m@lod0-heriverse/m.gltf",
+                    media_type: "model/gltf+json", packaging: "file_set",
+                    digest_covers: "members", checksum: "sha256:" + "d".repeat(64) };
+  eq(Heriverse.canConsumeResource(insieme).ok, true, "un insieme glTF si apre: la porta è un glTF");
+  eq(scegli([insieme]), "versions/m@lod0-heriverse/m.gltf", "…e la regola dà la sua porta");
+  ok(Heriverse.isFileSet(insieme), "…ed è un insieme");
+  eq(Heriverse.sourceOfResource(insieme, null).kind, "path", "dalla cartella: il percorso, come prima");
+  const file = (id, url) => ({ id, type: "resource_file", data: { url } });
+  const v = { id: "v", getNeighborsByRelation: (r, dir) => r === "has_file" && dir === "to"
+    ? { b: file("b", "x/m.bin"), a: file("a", "x/m.gltf"), z: { id: "z", type: "resource", data: { url: "x" } } } : {} };
+  eq(Heriverse.membersOfResource(v).map((m) => m.url), ["x/m.gltf", "x/m.bin"],
+     "i membri: i ResourceFile legati da has_file, in ordine di id");
+}
+
 // ── RETRO-COMPATIBILITÀ: un project.json PRE-notte ────────────────────────
 //
 // Il caso vero: una sola risorsa, nessun tier, nessun packaging, nessun
