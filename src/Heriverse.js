@@ -27,6 +27,7 @@ import Period from "./Models/period.js";
 import HeriverseGraphDrawer from "./HeriverseGraphDrawer.js";
 import { Archive3tz, Tiles3tzPlugin, archiveBase, httpSource } from "./HeriverseTiles3tz.js";
 import { fetchFileSet, fileSetBase, fileSetURLModifier, mimeOf } from "./HeriverseFileSet.js";
+import { applyYUpPlacement } from "./HeriverseRMDoc.js";
 
 let iconFolder = window.location.href.includes("heriverse-wapp")
 	? "/a/heriverse-wapp/res/graphicons/"
@@ -1919,18 +1920,29 @@ Heriverse.setupEventHandlers = () => {
 		if (!docsRM.length) return;
 
 		docsRM.forEach(async (docRM) => {
-			const multimedUrl = docRM.data.url;
+			// MICRO-HERIVERSE-RMDOC (9 ott 2026) · il file si risolve come quello
+			// di un RM: la versione che la regola sceglie (anche un insieme dal
+			// nodo), oppure `data.url` relativo allo studio; la trasformazione
+			// è `data.transform`, in Blender (Z-up, euler XYZ in radianti,
+			// stringhe), portata nella scena Y-up (`src/HeriverseRMDoc.js`)
+			const transform = docRM.data?.transform || docRM.transform;
+			const chosen = docRM.type === "representation_model_doc"
+				? Heriverse.chooseResourceForRepresentationModel(docRM) : null;
+			const multimedUrl = chosen ? chosen.data.url : docRM.data.url;
 			let sceneElem;
 			if (ATON.Utils.isImage(multimedUrl)) {
 				ATON.Utils.textureLoader.setCrossOrigin("anonymous");
-				const texture = await ATON.Utils.textureLoader.loadAsync(multimedUrl);
+				const texture = await ATON.Utils.textureLoader.loadAsync(
+					Heriverse.getLinkToResource(multimedUrl));
 				texture.colorSpace = THREE.SRGBColorSpace;
 
 				const aspect = texture.image.width / texture.image.height;
 				const planeHeight = 2;
 				const planeWidth = planeHeight * aspect;
 
-				const plGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight);
+				// il piano nel piano XY di Blender, come il quad che EM Tools
+				// esporta: in Y-up è il piano XZ
+				const plGeometry = new THREE.PlaneGeometry(planeWidth, planeHeight).rotateX(-Math.PI / 2);
 				const plMaterial = new THREE.MeshBasicMaterial({
 					map: texture,
 					transparent: true,
@@ -1940,41 +1952,18 @@ Heriverse.setupEventHandlers = () => {
 				sceneElem = new THREE.Mesh(plGeometry, plMaterial);
 				let sN = ATON.createSceneNode();
 				sN.add(sceneElem);
-
-				if (docRM.transform) {
-					if (docRM.transform.position) {
-						let positionJson = docRM.transform.position;
-						sN.position.set(positionJson[0], positionJson[1], positionJson[2]);
-					}
-					if (docRM.transform.rotation) {
-						let rotationJson = docRM.transform.rotation;
-						sN.rotation.set(rotationJson[0], rotationJson[1], rotationJson[2]);
-					}
-					if (docRM.transform.scale) {
-						let scaleJson = docRM.transform.scale;
-						sN.scale.set(scaleJson[0], scaleJson[1], scaleJson[2]);
-					}
-				}
+				applyYUpPlacement(sN, transform);
 
 				sN.attachToRoot();
 			} else {
-				let docRMNode = ATON.createSceneNode().load(docRM.data.url, () => {
-					let model = docRMNode;
-					if (docRM.transform) {
-						if (docRM.transform.position) {
-							let positionJson = docRM.transform.position;
-							model.position.set(positionJson[0], positionJson[1], positionJson[2]);
-						}
-						if (docRM.transform.rotation) {
-							let rotationJson = docRM.transform.rotation;
-							model.rotation.set(rotationJson[0], rotationJson[1], rotationJson[2]);
-						}
-						if (docRM.transform.scale) {
-							let scaleJson = docRM.transform.scale;
-							model.scale.set(scaleJson[0], scaleJson[1], scaleJson[2]);
-						}
-					}
-				});
+				const label = docRM.name || docRM.id;
+				const docRMNode = ATON.createSceneNode();
+				applyYUpPlacement(docRMNode, transform);
+				const data = chosen ? chosen.data : docRM.data;
+				const entry = chosen ? Heriverse.currMG?.getNode?.(chosen.choice.entry.id) : null;
+				Heriverse.lastLoads[docRM.id] = { name: label, url: data.url, rmdoc: true };
+				Heriverse.loadVersion(docRMNode, data, entry, label)
+					.then((got) => { Heriverse.lastLoads[docRM.id] = { name: label, rmdoc: true, ...got }; });
 
 				docRMNode.attachToRoot();
 				Heriverse.rm_in_scene[docRMNode.id] = docRMNode;
