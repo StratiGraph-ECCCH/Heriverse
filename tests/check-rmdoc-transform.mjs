@@ -11,6 +11,7 @@
 // a meno di 1 cm e 0,1°.
 //
 //   node tests/check-rmdoc-transform.mjs
+import { existsSync } from "node:fs";
 import assert from "node:assert/strict";
 import { yUpPlacement, quatFromBlenderEulerXYZ, applyYUpPlacement } from "../src/HeriverseRMDoc.js";
 
@@ -106,6 +107,42 @@ eq(yUpPlacement(null), null, "nessuna trasformazione: niente");
   applyYUpPlacement(o, D06);
   eq([o.position.v, o.quaternion.v, o.scale.v], [t.position, t.quaternion, t.scale],
      "applicata a un nodo di three: posizione, quaternione, scala");
+}
+
+// ── la forma nuova (s3Dgraphy 1.6.31, E.D. 16-17 ott 2026) ──────────────
+{
+  const gradi = { position: [12.5, -4, 3.25], rotation: [80, 0, 30], rotation_order: "XYZ", angle_unit: "deg",
+                  scale: [1.5, 1.5, 1.5], up_axis: "Z", pivot: [0, 0, 0] };
+  const tn = yUpPlacement(gradi);
+  ok(dist(tn.position, t.position) < 1e-9 && angleDeg(fromThree(tn.quaternion), fromThree(t.quaternion)) < 1e-6,
+     "gradi con angle_unit: lo stesso posizionamento dei radianti della forma vecchia");
+  // un ordine diverso da XYZ: la prima lettera ruota per prima
+  const zxy = yUpPlacement({ rotation: [90, 0, 90], rotation_order: "ZXY", angle_unit: "deg" });
+  const xyz = yUpPlacement({ rotation: [90, 0, 90], rotation_order: "XYZ", angle_unit: "deg" });
+  ok(angleDeg(fromThree(zxy.quaternion), fromThree(xyz.quaternion)) > 1, "rotation_order ZXY non è XYZ");
+  // il PERNO: Podio1 ruotato di 30° in EMStudio attorno al suo centro (la sonda del 17 ott)
+  const centro = [-16.1851825714, -2.4938678741, 493.6906280518];
+  const podio = { position: [0, 0, 0], rotation: [0, 0, 30], rotation_order: "XYZ", angle_unit: "deg", scale: [1, 1, 1],
+                  up_axis: "Z", pivot: centro, quaternion: [0.9659258263, 0, 0, 0.2588190451] };
+  const tp = yUpPlacement(podio);
+  ok(dist(place(tp, C(centro)), C(centro)) < 1e-9, "Podio1 ruotato attorno a sé: il centro del pezzo resta dov'era");
+  const sbagliato = yUpPlacement({ ...podio, pivot: [0, 0, 0] });
+  ok(dist(place(sbagliato, C(centro)), C(centro)) > 8, "…attorno all'origine del rilievo si sposterebbe di 8,5 m");
+  // Y-up dichiarato: niente cambio di base
+  const yup = yUpPlacement({ position: [1, 2, 3], rotation: [0, 90, 0], angle_unit: "deg", up_axis: "Y" });
+  eq(yup.position, [1, 2, 3], "up_axis Y: la posizione com'è");
+  // lo stesso posizionamento di EMStudio (`transform3d.ts`), se il checkout è accanto
+  const EMS = new URL("../../EMStudio/frontend/", import.meta.url).pathname;
+  if (existsSync(EMS + "src/transform3d.ts") && existsSync(EMS + "node_modules/esbuild")) {
+    const esbuild = await import(EMS + "node_modules/esbuild/lib/main.js");
+    const b = await esbuild.build({ stdin: { contents: `export * from "./transform3d";`, resolveDir: EMS + "src", loader: "ts" },
+                                    bundle: true, format: "esm", write: false });
+    const X = await import("data:text/javascript;base64," + Buffer.from(b.outputFiles[0].text).toString("base64"));
+    const pose = X.xfToPose(X.readTransform({ transform: podio }));
+    const qe = X.quatFromThreeEuler(pose.rotation);
+    ok(dist(pose.position, tp.position) < 1e-6 && angleDeg(qe, fromThree(tp.quaternion)) < 1e-6,
+       `Podio1: Heriverse lo mette dove lo mette EMStudio (posizione ${tp.position.map((v) => v.toFixed(4)).join(", ")})`);
+  } else console.log("  (EMStudio accanto non c'è: il confronto con transform3d.ts è saltato)");
 }
 
 console.log(`heriverse rmdoc transform: ${n} controlli passati`);

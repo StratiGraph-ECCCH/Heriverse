@@ -28,6 +28,7 @@ import HeriverseGraphDrawer from "./HeriverseGraphDrawer.js";
 import { Archive3tz, Tiles3tzPlugin, archiveBase, httpSource } from "./HeriverseTiles3tz.js";
 import { fetchFileSet, fileSetBase, fileSetURLModifier, mimeOf } from "./HeriverseFileSet.js";
 import { applyYUpPlacement } from "./HeriverseRMDoc.js";
+import { alternativeSets, chooseAlternative, graphFromMultigraph, iterSets } from "./HeriverseAlternatives.js";
 
 let iconFolder = window.location.href.includes("heriverse-wapp")
 	? "/a/heriverse-wapp/res/graphicons/"
@@ -854,20 +855,7 @@ Heriverse.createRepresentationModelNodes = () => {
 				let sn = ATON.createSceneNode(name);
 				sn.load(res_url, () => {
 					sn.removeFromParent();
-					if (rn.data.transform) {
-						let rot = rn.data.transform.rotation;
-						let pos = rn.data.transform.position;
-						let scl = rn.data.transform.scale;
-						if (rot) {
-							sn.setRotation(rot[0], rot[1], rot[2]);
-						}
-						if (pos) {
-							sn.setPosition(pos[0], pos[1], pos[2]);
-						}
-						if (scl) {
-							sn.setScale(scl[0], scl[1], scl[2]);
-						}
-					}
+					if (rn.data.transform) applyYUpPlacement(sn, rn.data.transform);
 				});
 			}
 		}
@@ -2236,24 +2224,17 @@ function shouldAttachRepresentationModelToEpoch(epochNode, period) {
 	return epochNode?.id === Heriverse.currTemporalFilter?.id;
 }
 
+// MICRO le alternative e la trasformazione (17 ott 2026) · `data.transform` di
+// un RM nella forma di s3Dgraphy 1.6.31 (gradi, ordine, perno; la vecchia in
+// radianti si legge ancora) portata nella scena Y-up col cambio di base
+// dell'exporter glTF, come per le RMDoc (`src/HeriverseRMDoc.js`). Fino a oggi
+// la si applicava senza convertire gli assi: non si vedeva solo perché i 99 RM
+// di Templu Mare sono tutti identità. Su un tileset si applica SOPRA la posa
+// del suo tileset.json, che resta del file.
 function applyRepresentationModelTransform(sceneNode, representationModelNode) {
 	const transform = representationModelNode.data?.transform;
-
 	if (!transform || !sceneNode) return;
-
-	const { rotation, position, scale } = transform;
-
-	if (rotation) {
-		sceneNode.setRotation(rotation[0], rotation[1], rotation[2]);
-	}
-
-	if (position) {
-		sceneNode.setPosition(position[0], position[1], position[2]);
-	}
-
-	if (scale) {
-		sceneNode.setScale(scale[0], scale[1], scale[2]);
-	}
+	applyYUpPlacement(sceneNode, transform);
 }
 
 // I byte già misurati entrano in ATON per la stessa via di `load()` — il
@@ -2402,10 +2383,68 @@ Heriverse.loadTileset = (sceneNode, source, kind, label, expectedDoor = null) =>
 
 function attachRepresentationModelToEpoch(representationModelNode, epochNode) {
 	if (!epochNode) return;
-
-	const name = representationModelNode.name;
 	const chosen = Heriverse.chooseResourceForRepresentationModel(representationModelNode);
 	if (!chosen) return;
+	attachChosenToEpoch(representationModelNode, chosen, epochNode);
+}
+
+// ── LE ALTERNATIVE: IL CAPPELLO COMUNE (E.D., 17 ott 2026) ─────────────────
+//
+// Due risorse sono alternative se e solo se hanno lo stesso cappello (l'RM, o
+// il contenitore RM — s3Dgraphy `alternative_sets`, la copia JS in
+// `src/HeriverseAlternatives.js`). Heriverse accende UNA alternativa per
+// insieme: per un RM la versione per uso (heriverse, aton, web, realtime: la
+// regola di sempre); per un contenitore il SUO tileset se una versione che il
+// viewer apre dichiara uno di quegli usi — e allora i membri si spengono —,
+// altrimenti i membri, ciascuno con la sua versione. Una scelta a mano non ha
+// ancora un pannello dove stare: `Heriverse.altForce[<contenitore>] =
+// "container" | "members"` la impone (la proposta di interfaccia è nel referto).
+Heriverse.altForce = {};
+//: l'ultima scelta per ogni contenitore con un'alternativa sua
+Heriverse.lastAltChoices = {};
+const altCache = new WeakMap();
+
+/** Gli insiemi di alternative di un grafo dello studio (calcolati una volta). */
+Heriverse.alternativesOf = (graphKey) => {
+	const mg = Heriverse.currMG;
+	const g = mg?.json?.graphs?.[graphKey];
+	if (!g) return null;
+	let byKey = altCache.get(mg);
+	if (!byKey) altCache.set(mg, (byKey = {}));
+	if (!byKey[graphKey]) byKey[graphKey] = alternativeSets(graphFromMultigraph(g));
+	return byKey[graphKey];
+};
+
+const consumable = (entries) => entries.filter((e) => Heriverse.canConsumeResource(e.data, { anyTier: true }).ok);
+
+/** Per i grafi correnti: i contenitori che accendono il loro tileset
+ *  (`[{set, choice, graph}]`) e i membri che per questo si spengono. */
+Heriverse.containerAlternatives = () => {
+	const lit = [];
+	const off = new Set();
+	for (const key of Heriverse.currentGraphs || []) {
+		const res = Heriverse.alternativesOf(key);
+		if (!res) continue;
+		for (const set of iterSets(res.sets)) {
+			if (set.hat_kind !== "container" || !set.alternatives.length) continue;
+			const choice = chooseAlternative(set, Heriverse.VIEWER_USES, Heriverse.chooseVersion,
+				{ preferLevel: Heriverse.preferredLodLevel, force: Heriverse.altForce[set.hat] || null, pick: consumable });
+			Heriverse.lastAltChoices[set.hat] = { level: choice?.level, use: choice?.use, entry: choice?.entry?.id ?? null,
+			                                      covers: set.covers.length };
+			if (choice?.level !== "container" || !choice.entry) continue;
+			console.log(`[Heriverse] container ${set.name}: its tileset (${choice.use} version `
+				+ `${String(choice.entry.lod_level || "").toUpperCase()}, ${shortSum(choice.entry.checksum)}) instead of its ${set.covers.length} models`);
+			for (const m of set.covers) off.add(m);
+			lit.push({ set, choice, graph: key });
+		}
+	}
+	return { lit, off };
+};
+
+/** Un RM, o l'alternativa di un contenitore, dentro l'epoca: la risorsa scelta
+ *  (un tileset o una versione), e la trasformazione del nodo. */
+function attachChosenToEpoch(representationModelNode, chosen, epochNode) {
+	const name = representationModelNode.name;
 	// C1 · da un nodo, una cartella di tessere non si serve: si prende la sua
 	// rappresentazione in un file (il `.3tz`), se lo studio la dichiara
 	let data = chosen.data;
@@ -2443,7 +2482,19 @@ function attachRepresentationModelToEpoch(representationModelNode, epochNode) {
 }
 
 function attachVisibleRepresentationModels(period, representationModels) {
+	// le alternative dei contenitori: il tileset dell'insieme al posto dei membri
+	const { lit, off } = Heriverse.containerAlternatives();
+	for (const { set, choice } of lit) {
+		const pseudo = { id: set.hat, name: set.name, data: {} };
+		for (const epochId of set.epochs) {
+			const epochNode = Heriverse.currMG.getNode(epochId);
+			if (!epochNode || !shouldAttachRepresentationModelToEpoch(epochNode, period)) continue;
+			if (epochNode.existsInTime && !epochNode.existsInTime(period.min, period.max)) continue;
+			attachChosenToEpoch(pseudo, { data: choice.entry.data, choice }, epochNode);
+		}
+	}
 	representationModels.forEach((rmNode) => {
+		if (off.has(rmNode.id)) return;
 		const epochs = getRepresentationModelEpochs(rmNode);
 
 		for (const epochId in epochs) {
